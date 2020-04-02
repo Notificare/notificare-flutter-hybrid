@@ -12,4 +12,14 @@ class AssetLoader {
       throw Exception('Failed to load the demo source config.');
     }
   }
+
+  static Future<String> fetchString(String url) async {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load string from: $url');
+    }
+  }
 }

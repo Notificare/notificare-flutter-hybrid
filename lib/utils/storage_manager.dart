@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageManager {
   static final _kDemoSourceConfig = 'demo_source_config';
+  static final _kCustomScript = 'custom_script';
 
   static Future<DemoSourceConfig> getDemoSourceConfig() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,5 +27,15 @@ class StorageManager {
     final prefs = await SharedPreferences.getInstance();
     final dynamicStuff = value.toJson();
     return prefs.setString(_kDemoSourceConfig, json.encode(dynamicStuff));
+  }
+
+  static Future<String> getCustomScript() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_kCustomScript);
+  }
+
+  static Future<bool> setCustomScript(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(_kCustomScript, value);
   }
 }

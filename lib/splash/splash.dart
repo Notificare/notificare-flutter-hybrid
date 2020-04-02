@@ -19,7 +19,7 @@ class _SplashState extends State<Splash> {
     _notificare.onEventReceived.listen((NotificareEvent event) {
       if (event.name != 'ready') return;
 
-      _fetchConfig();
+      _startup();
     });
   }
 
@@ -32,7 +32,12 @@ class _SplashState extends State<Splash> {
     );
   }
 
-  void _fetchConfig() async {
+  void _startup() async {
+    await _fetchConfig();
+    await _fetchCustomScript();
+  }
+
+  _fetchConfig() async {
     debugPrint('Fetching configuration assets.');
 
     try {
@@ -42,10 +47,28 @@ class _SplashState extends State<Splash> {
             'The Notificare app is not correctly configured. Missing the CONFIG asset group and/or demoSourceConfig.json');
       }
 
-      final config = await AssetLoader.fetchDemoSourceConfig(assets.last.assetUrl);
+      final config =
+          await AssetLoader.fetchDemoSourceConfig(assets.last.assetUrl);
       await StorageManager.setDemoSourceConfig(config);
     } catch (err) {
       debugPrint('Failed to fetch the configuration assets: $err');
+    }
+  }
+
+  _fetchCustomScript() async {
+    debugPrint('Fetching custom script assets.');
+
+    try {
+      final assets = await _notificare.fetchAssets("CUSTOMJS");
+      if (assets.isEmpty) {
+        debugPrint(
+            'The Notificare app is not correctly configured. Missing the CUSTOMJS asset group and/or customScriptsDemo.js');
+      }
+
+      final customScript = await AssetLoader.fetchString(assets.last.assetUrl);
+      await StorageManager.setCustomScript(customScript);
+    } catch (err) {
+      debugPrint('Failed to fetch the custom script assets: $err');
     }
   }
 }
