@@ -1,3 +1,4 @@
+import 'package:demo_flutter/ui/onboarding/onboarding.dart';
 import 'package:demo_flutter/utils/asset_loader.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class _SplashState extends State<Splash> {
     await _fetchCustomScript();
     await _fetchPassbookTemplate();
 
-    _continueToApp();
+    await _continueToApp();
   }
 
   _fetchConfig() async {
@@ -96,7 +97,13 @@ class _SplashState extends State<Splash> {
     }
   }
 
-  _continueToApp() {
+  _continueToApp() async {
     // TODO perhaps check the internet connectivity before moving forward
+
+    if (await StorageManager.getOnboardingStatus()) {
+
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Onboarding()));
+    }
   }
 }

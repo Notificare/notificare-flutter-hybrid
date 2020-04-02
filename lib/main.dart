@@ -1,4 +1,4 @@
-import 'package:demo_flutter/splash/splash.dart';
+import 'package:demo_flutter/ui/splash/splash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
