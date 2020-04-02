@@ -43,17 +43,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-class _HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Notificare Demo'),
-      ),
-      body: Center(
-        child: Text('Notificare Demo'),
-      ),
-    );
-  }
-}
