@@ -1,4 +1,5 @@
 import 'package:demo_flutter/utils/asset_loader.dart';
+import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
@@ -42,7 +43,7 @@ class _SplashState extends State<Splash> {
       }
 
       final config = await AssetLoader.fetchDemoSourceConfig(assets.last.assetUrl);
-      debugPrint('useLocationServices: ${config.config.useLocationServices}');
+      await StorageManager.setDemoSourceConfig(config);
     } catch (err) {
       debugPrint('Failed to fetch the configuration assets: $err');
     }

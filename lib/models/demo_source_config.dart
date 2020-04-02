@@ -33,6 +33,18 @@ class DemoSourceConfig {
       memberCard: MemberCard.fromJson(json['memberCard']),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'config': config.toJson(),
+        'url': url,
+        'urlScheme': urlScheme,
+        'host': host,
+        'email': email,
+        'api': api,
+        'nativeViews': nativeViews,
+        'social': social.toJson(),
+        'memberCard': memberCard.toJson(),
+      };
 }
 
 class Config {
@@ -47,6 +59,11 @@ class Config {
       useNavigationDrawer: json['useNavigationDrawer'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'useLocationServices': useLocationServices,
+        'useNavigationDrawer': useNavigationDrawer,
+      };
 }
 
 class Social {
@@ -61,6 +78,11 @@ class Social {
       twitter: json['twitter'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'facebook': facebook,
+    'twitter': twitter,
+  };
 }
 
 class MemberCard {
@@ -81,6 +103,12 @@ class MemberCard {
       }).toList(),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'templateId': templateId,
+    'primaryFields': primaryFields.map((value) => value.toJson()).toList(),
+    'secondaryFields': secondaryFields.map((value) => value.toJson()).toList(),
+  };
 }
 
 class MemberCardField {
@@ -95,4 +123,9 @@ class MemberCardField {
       email: json['email'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'email': email,
+  };
 }
