@@ -1,3 +1,4 @@
+import 'package:demo_flutter/splash/splash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: _HomePage(),
+      home: Splash(),
     );
   }
 }
