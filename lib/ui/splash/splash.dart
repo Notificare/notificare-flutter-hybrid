@@ -1,5 +1,3 @@
-import 'package:demo_flutter/ui/home/home.dart';
-import 'package:demo_flutter/ui/onboarding/onboarding.dart';
 import 'package:demo_flutter/utils/asset_loader.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
@@ -102,12 +100,10 @@ class _SplashState extends State<Splash> {
     // TODO perhaps check the internet connectivity before moving forward
 
     if (await StorageManager.getOnboardingStatus()) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Home()));
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       await StorageManager.setOnboardingStatus(true);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Onboarding()));
+      Navigator.pushReplacementNamed(context, '/onboarding');
     }
   }
 }
