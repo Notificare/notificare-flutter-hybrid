@@ -1,3 +1,4 @@
+import 'package:demo_flutter/ui/home/home.dart';
 import 'package:demo_flutter/ui/onboarding/onboarding.dart';
 import 'package:demo_flutter/utils/asset_loader.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
@@ -82,8 +83,8 @@ class _SplashState extends State<Splash> {
     try {
       final demoSourceConfig = await StorageManager.getDemoSourceConfig();
 
-      final passbook = await _notificare.doCloudHostOperation(
-          'GET', '/api/passbook', {}, {}, {});
+      final passbook = await _notificare
+          .doCloudHostOperation('GET', '/api/passbook', {}, {}, {});
 
       final templates = passbook['passbooks'] as List;
       templates.forEach((template) {
@@ -101,9 +102,12 @@ class _SplashState extends State<Splash> {
     // TODO perhaps check the internet connectivity before moving forward
 
     if (await StorageManager.getOnboardingStatus()) {
-
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Home()));
     } else {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Onboarding()));
+      await StorageManager.setOnboardingStatus(true);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Onboarding()));
     }
   }
 }
