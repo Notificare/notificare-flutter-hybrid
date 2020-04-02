@@ -1,7 +1,6 @@
 import 'package:demo_flutter/utils/asset_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
-import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 
 class Splash extends StatefulWidget {
