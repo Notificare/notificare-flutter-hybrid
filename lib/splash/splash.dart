@@ -35,6 +35,9 @@ class _SplashState extends State<Splash> {
   void _startup() async {
     await _fetchConfig();
     await _fetchCustomScript();
+    await _fetchPassbookTemplate();
+
+    _continueToApp();
   }
 
   _fetchConfig() async {
@@ -70,5 +73,30 @@ class _SplashState extends State<Splash> {
     } catch (err) {
       debugPrint('Failed to fetch the custom script assets: $err');
     }
+  }
+
+  _fetchPassbookTemplate() async {
+    debugPrint('Fetching passbook template.');
+
+    try {
+      final demoSourceConfig = await StorageManager.getDemoSourceConfig();
+
+      final passbook = await _notificare.doCloudHostOperation(
+          'GET', '/api/passbook', {}, {}, {});
+
+      final templates = passbook['passbooks'] as List;
+      templates.forEach((template) {
+        if (template['_id'] == demoSourceConfig.memberCard.templateId) {
+          //StorageManager.setMemberCardTemplate(template);
+          // TODO parse and store the template
+        }
+      });
+    } catch (err) {
+      debugPrint('Failed to fetch the passbook template: $err');
+    }
+  }
+
+  _continueToApp() {
+    // TODO perhaps check the internet connectivity before moving forward
   }
 }
