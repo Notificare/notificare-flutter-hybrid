@@ -3,8 +3,20 @@ import 'package:demo_flutter/models/demo_source_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageManager {
+  static final _kOnboardingStatus = 'onboarding_status';
   static final _kDemoSourceConfig = 'demo_source_config';
   static final _kCustomScript = 'custom_script';
+
+  static Future<bool> getOnboardingStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(_kOnboardingStatus) &&
+        prefs.getBool(_kOnboardingStatus);
+  }
+
+  static Future<bool> setOnboardingStatus(bool shown) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(_kOnboardingStatus, shown);
+  }
 
   static Future<DemoSourceConfig> getDemoSourceConfig() async {
     final prefs = await SharedPreferences.getInstance();
