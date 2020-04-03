@@ -1,4 +1,5 @@
 import 'package:demo_flutter/ui/home/home.dart';
+import 'package:demo_flutter/ui/inbox/inbox.dart';
 import 'package:demo_flutter/ui/onboarding/onboarding.dart';
 import 'package:demo_flutter/ui/splash/splash.dart';
 import 'package:flutter/foundation.dart';
@@ -51,6 +52,7 @@ class _MyAppState extends State<MyApp> {
         '/splash': (context) => Splash(),
         '/onboarding': (context) => Onboarding(),
         '/home': (context) => Home(),
+        '/inbox': (context) => Inbox(),
       },
     );
   }
