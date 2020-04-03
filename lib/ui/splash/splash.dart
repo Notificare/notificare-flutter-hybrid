@@ -105,7 +105,6 @@ class _SplashState extends State<Splash> {
     if (await StorageManager.getOnboardingStatus()) {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
-      await StorageManager.setOnboardingStatus(true);
       Navigator.pushReplacementNamed(context, '/onboarding');
     }
   }

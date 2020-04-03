@@ -20,9 +20,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _notificare.launch();
-    _notificare.onEventReceived.listen((NotificareEvent event) {
-      if (event.name == 'ready') {
-        debugPrint('Notificare is ready.');
+    _notificare.onEventReceived.listen((NotificareEvent event) async {
+      switch (event.name) {
+        case 'ready':
+          debugPrint('Notificare is ready.');
+
+          if (await _notificare.isRemoteNotificationsEnabled()) {
+            debugPrint(
+                'Remote notifications are enabled. Registering for notifications...');
+            _notificare.registerForNotifications();
+          }
+
+          break;
+        case 'deviceRegistered':
+          debugPrint('The device is ready for push.');
+          break;
       }
     });
   }

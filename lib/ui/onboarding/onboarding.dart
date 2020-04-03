@@ -1,6 +1,8 @@
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/utils/globals.dart';
+import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:location_permissions/location_permissions.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 
@@ -41,6 +43,7 @@ class _OnboardingState extends State<Onboarding> {
         onWillPop: _onWillPop,
         child: PageView(
           controller: _pageController,
+          physics: NeverScrollableScrollPhysics(),
           children: _onboardingAssets.map((asset) {
             return Stack(
               alignment: AlignmentDirectional.topCenter,
@@ -107,6 +110,15 @@ class _OnboardingState extends State<Onboarding> {
   }
 
   _onButtonPressed(NotificareAsset asset) {
+    switch (asset.assetButton.action) {
+      case 'goToLocationServices':
+        _notificare.registerForNotifications();
+        break;
+      case 'goToApp':
+        _startLocationUpdates();
+        return;
+    }
+
     _pageController.nextPage(
       duration: kViewPagerAnimationDuration,
       curve: kViewPagerAnimationCurve,
@@ -123,6 +135,24 @@ class _OnboardingState extends State<Onboarding> {
       );
 
       return Future.value(false);
+    }
+  }
+
+  _startLocationUpdates() async {
+    try {
+      final permission = await LocationPermissions().requestPermissions();
+
+      if (permission == PermissionStatus.granted) {
+        _notificare.startLocationUpdates();
+
+        // Do not show the on-boarding again, we're done.
+        await StorageManager.setOnboardingStatus(true);
+
+        // Now yes, let's move into the home page.
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (err) {
+      debugPrint('Failed to get the location permission: $err');
     }
   }
 }
