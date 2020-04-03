@@ -18,12 +18,12 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
 
-    _notificare.onEventReceived.listen((e) async {
-      if (e.name == 'badgeUpdated' && !_isLoading) {
+    _notificare.onEventReceived.listen((event) async {
+      if (event.name == 'badgeUpdated' && !_isLoading) {
         debugPrint('Received a badge update event.');
 
-        final event = e as NotificareBadgeUpdatedEvent;
-        await _updateBadge(event.unreadCount);
+        final data = event.data as NotificareBadgeUpdatedEvent;
+        await _updateBadge(data.unreadCount);
       }
     });
   }
