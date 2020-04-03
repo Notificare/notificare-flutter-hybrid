@@ -29,14 +29,19 @@ class _OnboardingState extends State<Onboarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Onboarding'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(0),
+        child: AppBar(
+          backgroundColor: Colors.black,
+        ),
       ),
       body: PageView(
         controller: _pageController,
         children: _onboardingAssets.map((asset) {
-          return Center(
-            child: Text(asset.assetTitle),
+          return Container(
+            color: Colors.red,
+            child: Image.network(asset.assetUrl,
+                alignment: AlignmentDirectional.topCenter),
           );
         }).toList(),
       ),
