@@ -10,7 +10,7 @@ class Onboarding extends StatefulWidget {
 class _OnboardingState extends State<Onboarding> {
   final _notificare = NotificarePushLib();
   PageController _pageController;
-  List<NotificareAsset> _onboardingAssets = [];
+  final _onboardingAssets = List<NotificareAsset>();
 
   @override
   void initState() {
@@ -47,7 +47,8 @@ class _OnboardingState extends State<Onboarding> {
     try {
       final assets = await _notificare.fetchAssets("ONBOARDING");
       setState(() {
-        _onboardingAssets = assets;
+        _onboardingAssets.clear();
+        _onboardingAssets.addAll(assets);
       });
     } catch (err) {
       debugPrint('Failed to load the onboarding assets: $err');
