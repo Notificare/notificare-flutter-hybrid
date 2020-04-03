@@ -1,7 +1,9 @@
+import 'package:demo_flutter/models/demo_source_config.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -13,6 +15,7 @@ class _HomeState extends State<Home> {
   final _notificare = NotificarePushLib();
   WebViewController _controller;
   bool _isLoading = true;
+  DemoSourceConfig _demoSourceConfig;
 
   @override
   void initState() {
@@ -46,6 +49,7 @@ class _HomeState extends State<Home> {
               _controller = webViewController;
 
               final config = await StorageManager.getDemoSourceConfig();
+              _demoSourceConfig = config;
               _controller.loadUrl(config.url);
             },
             onPageStarted: (String url) {
@@ -57,6 +61,11 @@ class _HomeState extends State<Home> {
               setState(() => _isLoading = false);
 
               await _updateBadge();
+            },
+            navigationDelegate: (NavigationRequest request) {
+              return _handleUrl(request.url)
+                  ? NavigationDecision.prevent
+                  : NavigationDecision.navigate;
             },
           ),
           Visibility(
@@ -93,5 +102,31 @@ class _HomeState extends State<Home> {
         "script.innerHTML = $js;" +
         "parent.appendChild(script)" +
         "})()");
+  }
+
+  bool _handleUrl(String url) {
+    final configHostUri = Uri.parse(_demoSourceConfig.url);
+    final uri = Uri.parse(url);
+
+    if (uri.scheme != null &&
+        uri.scheme.startsWith(_demoSourceConfig.urlScheme)) {
+      // Handle recognized url schemes.
+      Navigator.pushNamed(context, uri.path);
+
+      return true;
+    } else if (uri.host != null && uri.host != configHostUri.host) {
+      // Handle https urls for other domains.
+      launch(url);
+
+      return true;
+    } else if (uri.scheme != null && uri.host == null) {
+      // Handle email links.
+      launch(url);
+
+      return true;
+    }
+
+    // Let the web view handle the url.
+    return false;
   }
 }
