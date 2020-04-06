@@ -1,3 +1,4 @@
+import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/ui/home/home.dart';
 import 'package:demo_flutter/ui/inbox/inbox.dart';
 import 'package:demo_flutter/ui/onboarding/onboarding.dart';
@@ -45,7 +46,9 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: NotificareColors.wildSand,
+        primaryColor: NotificareColors.outerSpace,
+        accentColor: NotificareColors.gray,
       ),
       home: Splash(),
       routes: {
