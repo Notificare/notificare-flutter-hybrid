@@ -37,6 +37,8 @@ class _MyAppState extends State<MyApp> {
         case 'deviceRegistered':
           debugPrint('The device is ready for push.');
           break;
+        default:
+          debugPrint('Received Notificare event: ${event.name}');
       }
     });
   }

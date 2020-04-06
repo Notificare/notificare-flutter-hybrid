@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -17,6 +18,18 @@ class _InboxState extends State<Inbox> {
   @override
   void initState() {
     super.initState();
+
+    _notificare.onEventReceived.listen((event) {
+      if (event.name == 'inboxLoaded') {
+        final data = event.data as NotificareInboxLoadedEvent;
+        debugPrint('Notificare inbox reloaded.');
+
+        setState(() {
+          _inbox.clear();
+          _inbox.addAll(data.inbox);
+        });
+      }
+    });
 
     _fetchInbox();
   }
@@ -82,7 +95,7 @@ class _InboxState extends State<Inbox> {
   Widget _buildInboxItem(BuildContext context, int position) {
     final item = _inbox[position];
 
-    return Container(
+    final cell = Container(
         height: 120,
         color: Colors.white,
         padding: EdgeInsets.all(10),
@@ -137,5 +150,21 @@ class _InboxState extends State<Inbox> {
             ),
           ],
         ));
+
+    return GestureDetector(
+      child: cell,
+      onTap: () => _onInboxItemTap(item),
+    );
+  }
+
+  _onInboxItemTap(NotificareInboxItem item) async {
+    debugPrint('Opening Notificare inbox item.');
+
+    try {
+      _notificare.presentInboxItem(item);
+      debugPrint('Notification presented...');
+    } catch (err) {
+      debugPrint('Failed to mark as read: $err');
+    }
   }
 }
