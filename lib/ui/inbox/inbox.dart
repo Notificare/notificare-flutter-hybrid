@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class Inbox extends StatefulWidget {
   @override
@@ -32,7 +33,13 @@ class _InboxState extends State<Inbox> {
       body: Stack(
         alignment: AlignmentDirectional.center,
         children: <Widget>[
-          ListView(),
+          ListView.separated(
+            itemCount: _inbox.length,
+            itemBuilder: _buildInboxItem,
+            separatorBuilder: (context, position) => Divider(
+              height: 1,
+            ),
+          ),
           Visibility(
             visible: !_loading && _inbox.isEmpty,
             child: Text(
@@ -70,5 +77,65 @@ class _InboxState extends State<Inbox> {
     } catch (err) {
       setState(() => _loading = false);
     }
+  }
+
+  Widget _buildInboxItem(BuildContext context, int position) {
+    final item = _inbox[position];
+
+    return Container(
+        height: 120,
+        color: Colors.white,
+        padding: EdgeInsets.all(10),
+        child: Row(
+          children: <Widget>[
+            Opacity(
+              opacity: item.opened ? 0.5 : 1,
+              child: item.attachment?.uri != null
+                  ? Image.network(item.attachment.uri)
+                  : Image.asset('assets/images/no_attachment.png'),
+            ),
+            Padding(padding: EdgeInsets.only(right: 10)),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    item.title,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: item.opened ? Colors.grey : Colors.black,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    item.message,
+                    maxLines: 4,
+                    style: TextStyle(
+                      color: item.opened ? Colors.grey : Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                        timeago.format(DateTime.parse(item.time)),
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: item.opened ? Colors.grey : Colors.black,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ));
   }
 }
