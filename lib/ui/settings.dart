@@ -57,6 +57,8 @@ class _SettingsState extends State<Settings> {
       title: 'Notifications',
       description:
           'Receive messages with our news, events or any other campaign we might find relevant for you',
+      checked: await _notificare.isRemoteNotificationsEnabled(),
+      onChanged: (checked) => _handleNotificationsToggle(checked),
     ));
 
     final demoSourceConfig = await StorageManager.getDemoSourceConfig();
@@ -71,7 +73,7 @@ class _SettingsState extends State<Settings> {
     if (await _notificare.isAllowedUIEnabled()) {
       final dnd = await _notificare.fetchDoNotDisturb();
 
-      if (dnd?.start != null && dnd?.end != null) {
+      if (dnd.start != null && dnd.end != null) {
         data.add(_PreferenceListItem(
           title: 'Do Not Disturb',
           description:
@@ -162,6 +164,18 @@ class _SettingsState extends State<Settings> {
     );
 
     await FlutterEmailSender.send(email);
+  }
+
+  Future<void> _handleNotificationsToggle(bool checked) async {
+    if (checked) {
+      await _notificare.registerForNotifications();
+    } else {
+      await _notificare.unregisterForNotifications();
+    }
+
+    // The checked prop gets updated internally but we still need to trigger
+    // a rebuild.
+    setState(() {});
   }
 
   Future<void> _handleChangedTag(String tag, bool checked) async {
