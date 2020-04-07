@@ -98,8 +98,7 @@ class _SettingsState extends State<Settings> {
     final tags = await _notificare.fetchTags();
     data.add(_SectionListItem(title: 'Tags'));
 
-    data.add(_TagListItem(
-      tag: 'tag_press',
+    data.add(_PreferenceListItem(
       title: 'Press',
       description:
           'Subscribe me to the group of devices that would like to receive all the news via push notifications',
@@ -107,8 +106,7 @@ class _SettingsState extends State<Settings> {
       onChanged: (checked) => _handleChangedTag('tag_press', checked),
     ));
 
-    data.add(_TagListItem(
-      tag: 'tag_newsletter',
+    data.add(_PreferenceListItem(
       title: 'Newsletter',
       description:
           'Subscribe me to the group of devices that would like to receive your newsletter',
@@ -116,8 +114,7 @@ class _SettingsState extends State<Settings> {
       onChanged: (checked) => _handleChangedTag('tag_newsletter', checked),
     ));
 
-    data.add(_TagListItem(
-      tag: 'tag_events',
+    data.add(_PreferenceListItem(
       title: 'Events',
       description:
           'Subscribe me to the group of devices that would like to receive all the events via push notifications',
@@ -181,11 +178,9 @@ class _SettingsState extends State<Settings> {
   Future<void> _handleChangedTag(String tag, bool checked) async {
     print('Handling tag toggle: $tag -> $checked');
 
-    setState(() {
-      final currentItem = _listItems.singleWhere(
-          (item) => item is _TagListItem && item.tag == tag) as _TagListItem;
-      currentItem.checked = checked;
-    });
+    // The checked prop gets updated internally but we still need to trigger
+    // a rebuild.
+    setState(() {});
 
     if (checked) {
       await _notificare.addTag(tag);
@@ -275,23 +270,6 @@ class _PreferenceListItem extends _ListItem {
       ),
     );
   }
-}
-
-class _TagListItem extends _PreferenceListItem {
-  final String tag;
-
-  _TagListItem({
-    this.tag,
-    title,
-    description,
-    checked,
-    onChanged,
-  }) : super(
-          title: title,
-          description: description,
-          checked: checked,
-          onChanged: onChanged,
-        );
 }
 
 class _AdornedListItem extends _ListItem {
