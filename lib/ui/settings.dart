@@ -249,7 +249,13 @@ class _PreferenceListItem extends _ListItem {
           ),
           Switch(
             value: checked,
-            onChanged: onChanged,
+            onChanged: (value) {
+              // Update self
+              this.checked = value;
+
+              // Execute consumer's callback
+              onChanged(value);
+            },
           ),
         ],
       ),
