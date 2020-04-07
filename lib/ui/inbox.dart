@@ -154,6 +154,9 @@ class _InboxState extends State<Inbox> {
     return GestureDetector(
       child: cell,
       onTap: () => _onInboxItemTap(item),
+      onLongPress: () => {
+        // TODO implement the contextual app bar
+      },
     );
   }
 
