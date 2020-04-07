@@ -1,8 +1,8 @@
 import 'package:demo_flutter/theme/notificare_colors.dart';
-import 'package:demo_flutter/ui/home/home.dart';
-import 'package:demo_flutter/ui/inbox/inbox.dart';
-import 'package:demo_flutter/ui/onboarding/onboarding.dart';
-import 'package:demo_flutter/ui/splash/splash.dart';
+import 'package:demo_flutter/ui/home.dart';
+import 'package:demo_flutter/ui/inbox.dart';
+import 'package:demo_flutter/ui/onboarding.dart';
+import 'package:demo_flutter/ui/splash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
