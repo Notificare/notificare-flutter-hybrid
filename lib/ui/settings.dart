@@ -67,6 +67,8 @@ class _SettingsState extends State<Settings> {
         title: 'Location Services',
         description:
             'Allow us to collect your location data in order to send notifications whenever you are around',
+        checked: await _notificare.isLocationServicesEnabled(),
+        onChanged: (checked) => _handleLocationToggle(checked),
       ));
     }
 
@@ -168,6 +170,18 @@ class _SettingsState extends State<Settings> {
       await _notificare.registerForNotifications();
     } else {
       await _notificare.unregisterForNotifications();
+    }
+
+    // The checked prop gets updated internally but we still need to trigger
+    // a rebuild.
+    setState(() {});
+  }
+
+  Future<void> _handleLocationToggle(bool checked) async {
+    if (checked) {
+      await _notificare.startLocationUpdates();
+    } else {
+      await _notificare.stopLocationUpdates();
     }
 
     // The checked prop gets updated internally but we still need to trigger
