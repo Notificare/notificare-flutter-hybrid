@@ -1,7 +1,9 @@
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
+import 'package:demo_flutter/utils/time_of_day_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 import 'package:package_info/package_info.dart';
 
@@ -11,8 +13,15 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  static const defaultDnDStart = TimeOfDay(hour: 0, minute: 0);
+  static const defaultDnDEnd = TimeOfDay(hour: 8, minute: 0);
+
   final _notificare = NotificarePushLib();
-  final _listItems = List<_ListItem>();
+  final _listKey = GlobalKey<AnimatedListState>();
+  final _listData = List<_ListItem>();
+
+  _PreferenceListItem dndItem;
+  TimeOfDay dndStart, dndEnd;
 
   @override
   void initState() {
@@ -21,127 +30,170 @@ class _SettingsState extends State<Settings> {
     _loadData();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-      ),
-      body: ListView.separated(
-        itemCount: _listItems.length,
-        itemBuilder: _buildListItem,
-        separatorBuilder: (context, index) => Divider(height: 1),
-      ),
-    );
-  }
-
-  Widget _buildListItem(BuildContext context, int index) {
-    return _listItems[index].build();
-  }
-
   Future<void> _loadData() async {
-    final data = List<_ListItem>();
-    await _loadNotificationSettings(data);
-    await _loadTags(data);
-    await _loadAbout(data);
+    try {
+      final notificationSettings = await _loadNotificationSettings();
+      final tags = await _loadTags();
+      final about = await _loadAbout();
 
-    setState(() {
-      _listItems.clear();
-      _listItems.addAll(data);
-    });
+      setState(() {
+        notificationSettings.forEach((item) => _addListItem(item));
+        tags.forEach((item) => _addListItem(item));
+        about.forEach((item) => _addListItem(item));
+      });
+    } catch (err) {
+      print('Something went wrong: $err');
+    }
   }
 
-  Future<void> _loadNotificationSettings(List<_ListItem> data) async {
-    data.add(_SectionListItem(title: 'Notification Settings'));
-    data.add(_PreferenceListItem(
+  Future<List<_ListItem>> _loadNotificationSettings() async {
+    final result = List<_ListItem>();
+
+    result.add(_SectionListItem(title: 'Notification Settings'));
+
+    result.add(_PreferenceListItem(
       title: 'Notifications',
       description:
           'Receive messages with our news, events or any other campaign we might find relevant for you',
       checked: await _notificare.isRemoteNotificationsEnabled(),
-      onChanged: (checked) => _handleNotificationsToggle(checked),
+      onCheckChanged: (item, checked) async {
+        setState(() => item.checked = checked);
+        _handleNotificationsUpdate(checked);
+      },
     ));
 
     final demoSourceConfig = await StorageManager.getDemoSourceConfig();
     if (demoSourceConfig.config.useLocationServices) {
-      data.add(_PreferenceListItem(
+      result.add(_PreferenceListItem(
         title: 'Location Services',
         description:
             'Allow us to collect your location data in order to send notifications whenever you are around',
         checked: await _notificare.isLocationServicesEnabled(),
-        onChanged: (checked) => _handleLocationToggle(checked),
+        onCheckChanged: (item, checked) async {
+          setState(() => item.checked = checked);
+          _handleLocationServicesUpdate(checked);
+        },
       ));
     }
 
     if (await _notificare.isAllowedUIEnabled()) {
       final dnd = await _notificare.fetchDoNotDisturb();
 
-      if (dnd.start != null && dnd.end != null) {
-        data.add(_PreferenceListItem(
-          title: 'Do Not Disturb',
-          description:
-              'Configure a period of time where notifications will not generate alerts in the notification center',
-          checked: true,
-        ));
+      dndItem = _PreferenceListItem(
+        title: 'Do Not Disturb',
+        description:
+            'Configure a period of time where notifications will not generate alerts in the notification center',
+        checked: dnd.start != null && dnd.end != null,
+        onCheckChanged: (item, checked) {
+          setState(() {
+            item.checked = checked;
 
-        data.add(_SectionListItem(title: 'From'));
-        data.add(_SectionListItem(title: 'To'));
-      } else {
-        data.add(_PreferenceListItem(
-          title: 'Do Not Disturb',
-          description:
-              'Configure a period of time where notifications will not generate alerts in the notification center',
-          checked: false,
-        ));
+            final index = _listData.indexOf(item);
+
+            if (checked) {
+              dndStart = defaultDnDStart;
+              dndEnd = defaultDnDEnd;
+
+              _addListItem(
+                _createDoNotDisturbTimeListItem(dndStart, true),
+                index + 1,
+              );
+
+              _addListItem(
+                _createDoNotDisturbTimeListItem(dndEnd, false),
+                index + 2,
+              );
+            } else {
+              dndStart = null;
+              dndEnd = null;
+
+              _removeListItem(index + 1);
+              _removeListItem(index + 1);
+            }
+          });
+
+          _handleDoNotDisturbUpdate(checked);
+        },
+      );
+
+      result.add(dndItem);
+
+      if (dnd.start != null && dnd.end != null) {
+        dndStart = TimeOfDayUtils.parse(dnd.start);
+        result.add(_createDoNotDisturbTimeListItem(
+            TimeOfDayUtils.parse(dnd.start), true));
+
+        dndEnd = TimeOfDayUtils.parse(dnd.end);
+        result.add(_createDoNotDisturbTimeListItem(
+            TimeOfDayUtils.parse(dnd.end), false));
       }
+    } else {
+      dndItem = null;
     }
+
+    return result;
   }
 
-  Future<void> _loadTags(List<_ListItem> data) async {
+  Future<List<_ListItem>> _loadTags() async {
+    final result = List<_ListItem>();
     final tags = await _notificare.fetchTags();
-    data.add(_SectionListItem(title: 'Tags'));
 
-    data.add(_PreferenceListItem(
+    result.add(_SectionListItem(title: 'Tags'));
+
+    result.add(_PreferenceListItem(
       title: 'Press',
       description:
           'Subscribe me to the group of devices that would like to receive all the news via push notifications',
       checked: tags.contains('tag_press'),
-      onChanged: (checked) => _handleChangedTag('tag_press', checked),
+      onCheckChanged: (item, checked) {
+        setState(() => item.checked = checked);
+        _handleTagUpdate('tag_press', checked);
+      },
     ));
 
-    data.add(_PreferenceListItem(
+    result.add(_PreferenceListItem(
       title: 'Newsletter',
       description:
           'Subscribe me to the group of devices that would like to receive your newsletter',
       checked: tags.contains('tag_newsletter'),
-      onChanged: (checked) => _handleChangedTag('tag_newsletter', checked),
+      onCheckChanged: (item, checked) {
+        setState(() => item.checked = checked);
+        _handleTagUpdate('tag_newsletter', checked);
+      },
     ));
 
-    data.add(_PreferenceListItem(
+    result.add(_PreferenceListItem(
       title: 'Events',
       description:
           'Subscribe me to the group of devices that would like to receive all the events via push notifications',
       checked: tags.contains('tag_events'),
-      onChanged: (checked) => _handleChangedTag('tag_events', checked),
+      onCheckChanged: (item, checked) {
+        setState(() => item.checked = checked);
+        _handleTagUpdate('tag_events', checked);
+      },
     ));
+
+    return result;
   }
 
-  Future<void> _loadAbout(List<_ListItem> data) async {
+  Future<List<_ListItem>> _loadAbout() async {
+    final result = List<_ListItem>();
     final packageInfo = await PackageInfo.fromPlatform();
 
-    data.add(_SectionListItem(title: 'About this app'));
+    result.add(_SectionListItem(title: 'About this app'));
 
-    data.add(_AdornedListItem(
+    result.add(_AdornedListItem(
       title: 'Leave your feedback',
-      adornment: Icon(
+      adornmentBuilder: () => Icon(
         Icons.keyboard_arrow_right,
         color: NotificareColors.gray,
       ),
       onTap: () => _openEmailClient(),
     ));
 
-    data.add(_AdornedListItem(
+    result.add(_AdornedListItem(
       title: 'App version',
-      adornment: Text(
+      adornmentBuilder: () => Text(
         packageInfo.version,
         style: TextStyle(
           fontFamily: 'Lato',
@@ -150,6 +202,119 @@ class _SettingsState extends State<Settings> {
         ),
       ),
     ));
+
+    return result;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Settings'),
+      ),
+      body: AnimatedList(
+        key: _listKey,
+        initialItemCount: _listData.length,
+        itemBuilder: (context, index, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: _listData[index].build(context, index),
+          );
+        },
+      ),
+    );
+  }
+
+  void _addListItem(_ListItem item, [int index]) {
+    final insertIndex = index != null ? index : _listData.length;
+    _listData.insert(insertIndex, item);
+    _listKey.currentState?.insertItem(insertIndex);
+  }
+
+  void _removeListItem(int index) {
+    final removed = _listData.removeAt(index);
+    _listKey.currentState?.removeItem(index, (context, animation) {
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: Interval(0.5, 1.0),
+        ),
+        child: SizeTransition(
+          sizeFactor: CurvedAnimation(
+            parent: animation,
+            curve: Interval(0.0, 1.0),
+          ),
+          axisAlignment: 0.0,
+          child: removed.build(context),
+        ),
+      );
+    });
+  }
+
+  Future<void> _handleNotificationsUpdate(bool enabled) async {
+    if (enabled) {
+      await _notificare.registerForNotifications();
+    } else {
+      await _notificare.unregisterForNotifications();
+    }
+  }
+
+  Future<void> _handleLocationServicesUpdate(bool enabled) async {
+    if (enabled) {
+      await _notificare.startLocationUpdates();
+    } else {
+      await _notificare.stopLocationUpdates();
+    }
+  }
+
+  Future<void> _handleDoNotDisturbUpdate(bool enabled) async {
+    if (enabled) {
+      final dnd = NotificareDeviceDnD();
+      dnd.start = TimeOfDayUtils.format(defaultDnDStart);
+      dnd.end = TimeOfDayUtils.format(defaultDnDEnd);
+
+      await _notificare.updateDoNotDisturb(dnd);
+    } else {
+      await _notificare.clearDoNotDisturb();
+    }
+  }
+
+  Future<void> _handleTagUpdate(String tag, bool enabled) async {
+    if (enabled) {
+      _notificare.addTag(tag);
+    } else {
+      _notificare.removeTag(tag);
+    }
+  }
+
+  Future<void> _handleDoNotDisturbTap(bool forStart) async {
+    final initialValue = forStart ? dndStart : dndEnd;
+    final value = await showTimePicker(
+      context: context,
+      initialTime: initialValue,
+    );
+
+    // The user cancelled the picker.
+    if (value == null) return;
+
+    setState(() {
+      if (forStart) {
+        dndStart = value;
+      } else {
+        dndEnd = value;
+      }
+
+      final dndIndex = _listData.indexOf(dndItem);
+      final indexOffset = forStart ? 1 : 2;
+      _listData[dndIndex + indexOffset] =
+          _createDoNotDisturbTimeListItem(value, forStart);
+    });
+
+    final dnd = NotificareDeviceDnD();
+    dnd.start = TimeOfDayUtils.format(forStart ? value : dndStart);
+    dnd.end = TimeOfDayUtils.format(!forStart ? value : dndEnd);
+
+    await _notificare.updateDoNotDisturb(dnd);
   }
 
   Future<void> _openEmailClient() async {
@@ -165,60 +330,56 @@ class _SettingsState extends State<Settings> {
     await FlutterEmailSender.send(email);
   }
 
-  Future<void> _handleNotificationsToggle(bool checked) async {
-    if (checked) {
-      await _notificare.registerForNotifications();
-    } else {
-      await _notificare.unregisterForNotifications();
-    }
-
-    // The checked prop gets updated internally but we still need to trigger
-    // a rebuild.
-    setState(() {});
-  }
-
-  Future<void> _handleLocationToggle(bool checked) async {
-    if (checked) {
-      await _notificare.startLocationUpdates();
-    } else {
-      await _notificare.stopLocationUpdates();
-    }
-
-    // The checked prop gets updated internally but we still need to trigger
-    // a rebuild.
-    setState(() {});
-  }
-
-  Future<void> _handleChangedTag(String tag, bool checked) async {
-    print('Handling tag toggle: $tag -> $checked');
-
-    // The checked prop gets updated internally but we still need to trigger
-    // a rebuild.
-    setState(() {});
-
-    if (checked) {
-      await _notificare.addTag(tag);
-    } else {
-      await _notificare.removeTag(tag);
-    }
+  _AdornedListItem _createDoNotDisturbTimeListItem(
+      TimeOfDay timeOfDay, bool forStart) {
+    return _AdornedListItem(
+      title: forStart ? 'From' : 'To',
+      adornmentBuilder: () => Text(
+        TimeOfDayUtils.format(timeOfDay),
+        style: TextStyle(
+          fontFamily: 'Lato',
+          fontSize: 14,
+          fontWeight: FontWeight.w300,
+        ),
+      ),
+      onTap: () => _handleDoNotDisturbTap(forStart),
+    );
   }
 }
 
+typedef _PreferenceCheckChangedCallback = void Function(
+    _PreferenceListItem, bool);
+
+typedef _AdornmentBuilderCallback = Widget Function();
+
 abstract class _ListItem {
-  Widget build();
+  Widget build(BuildContext context, [int index]);
+
+  Decoration buildDecoration(BuildContext context, {Color color}) {
+    final dividerColor = Theme.of(context).dividerColor;
+
+    final decoration = BoxDecoration(
+      color: color,
+      border: Border(bottom: BorderSide(color: dividerColor)),
+    );
+
+    return decoration;
+  }
 }
 
 class _SectionListItem extends _ListItem {
-  final String title;
+  String title;
 
-  _SectionListItem({this.title});
+  _SectionListItem({@required this.title});
 
   @override
-  Widget build() {
+  Widget build(BuildContext context, [int index]) {
     return Container(
+      key: ValueKey<_SectionListItem>(this),
       padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+      decoration: buildDecoration(context),
       child: Text(
-        title?.toUpperCase(),
+        title.toUpperCase(),
         style: TextStyle(
           fontFamily: 'Lato',
           fontSize: 14,
@@ -229,90 +390,79 @@ class _SectionListItem extends _ListItem {
 }
 
 class _PreferenceListItem extends _ListItem {
-  final String title;
-  final String description;
+  String title;
+  String description;
   bool checked;
-  final ValueChanged<bool> onChanged;
+  _PreferenceCheckChangedCallback onCheckChanged;
 
   _PreferenceListItem({
-    this.title,
-    this.description,
+    @required this.title,
+    @required this.description,
     this.checked = false,
-    this.onChanged,
+    @required this.onCheckChanged,
   });
 
   @override
-  Widget build() {
+  Widget build(BuildContext context, [int index]) {
     return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(16),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-              ],
-            ),
+      key: ValueKey<_PreferenceListItem>(this),
+      decoration: buildDecoration(context, color: Colors.white),
+      child: ListTile(
+        contentPadding: EdgeInsets.all(16),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'Lato',
+            fontSize: 16,
           ),
-          Switch(
-            value: checked,
-            onChanged: (value) {
-              // Update self
-              this.checked = value;
-
-              // Execute consumer's callback
-              onChanged(value);
-            },
+        ),
+        subtitle: Text(
+          description,
+          style: TextStyle(
+            fontFamily: 'Lato',
+            fontSize: 12,
+            fontWeight: FontWeight.w300,
           ),
-        ],
+        ),
+        trailing: Switch(
+          value: checked,
+          onChanged: (value) => onCheckChanged(this, value),
+        ),
       ),
     );
   }
 }
 
 class _AdornedListItem extends _ListItem {
-  final String title;
-  final Widget adornment;
-  final GestureTapCallback onTap;
+  String title;
+  _AdornmentBuilderCallback adornmentBuilder;
+  GestureTapCallback onTap;
 
-  _AdornedListItem({this.title, this.adornment, this.onTap});
+  _AdornedListItem({
+    @required this.title,
+    this.adornmentBuilder,
+    this.onTap,
+  });
 
   @override
-  Widget build() {
-    return GestureDetector(
-      child: Container(
-        color: Colors.white,
-        padding: EdgeInsets.all(16),
-        child: Row(children: <Widget>[
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontFamily: 'Lato',
-                fontSize: 16,
-              ),
-            ),
+  Widget build(BuildContext context, [int index]) {
+    final isBeingRemoved = index == null;
+
+    return Ink(
+      key: ValueKey<_AdornedListItem>(this),
+      decoration:
+          isBeingRemoved ? null : buildDecoration(context, color: Colors.white),
+      child: ListTile(
+        title: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'Lato',
+            fontSize: 16,
           ),
-          adornment,
-        ]),
+        ),
+        trailing: adornmentBuilder != null ? adornmentBuilder() : null,
+        onTap: onTap != null ? onTap : null,
       ),
-      onTap: onTap,
     );
   }
 }

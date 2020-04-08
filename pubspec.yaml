@@ -32,6 +32,7 @@ dependencies:
   timeago: ^2.0.26
   package_info: ^0.4.0+16
   flutter_email_sender: ^3.0.1
+  intl: ^0.16.1
 
 dev_dependencies:
   flutter_test:
