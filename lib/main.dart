@@ -52,6 +52,16 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: NotificareColors.wildSand,
         primaryColor: NotificareColors.outerSpace,
         accentColor: NotificareColors.gray,
+        fontFamily: 'ProximaNova',
+        textTheme: TextTheme(
+          body2: TextStyle(
+            fontWeight: FontWeight.w700,
+          ),
+          caption: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w100,
+          ),
+        ),
       ),
       home: Splash(),
       routes: {

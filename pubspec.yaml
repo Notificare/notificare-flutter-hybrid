@@ -82,10 +82,10 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   fonts:
-    - family: Lato
+    - family: ProximaNova
       fonts:
-        - asset: fonts/Lato-Regular.ttf
-        - asset: fonts/Lato-Light.ttf
-          weight: 300
-        - asset: fonts/Lato-Hairline.ttf
+        - asset: assets/fonts/ProximaNova-Regular.otf
+        - asset: assets/fonts/ProximaNova-Thin.otf
           weight: 100
+        - asset: assets/fonts/ProximaNova-Bold.otf
+          weight: 700

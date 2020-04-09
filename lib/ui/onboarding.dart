@@ -63,10 +63,8 @@ class _OnboardingState extends State<Onboarding> {
                         child: Text(
                           asset.assetTitle,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.title.copyWith(
                             color: NotificareColors.gray,
-                            fontSize: 20,
-                            fontFamily: 'Lato',
                           ),
                         ),
                       ),
@@ -77,12 +75,7 @@ class _OnboardingState extends State<Onboarding> {
                           color: NotificareColors.outerSpace,
                           textColor: Colors.white,
                           padding: EdgeInsets.all(15),
-                          child: Text(
-                            asset.assetButton.label.toUpperCase(),
-                            style: TextStyle(
-                              fontFamily: 'Lato',
-                            ),
-                          ),
+                          child: Text(asset.assetButton.label.toUpperCase()),
                           onPressed: () => _onButtonPressed(asset),
                         ),
                       )

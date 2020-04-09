@@ -57,7 +57,7 @@ class _InboxState extends State<Inbox> {
             visible: !_loading && _inbox.isEmpty,
             child: Text(
               'No messages found',
-              style: TextStyle(fontSize: 12),
+              style: Theme.of(context).textTheme.body1,
             ),
           ),
           Visibility(
@@ -116,18 +116,15 @@ class _InboxState extends State<Inbox> {
                   Text(
                     item.title,
                     maxLines: 1,
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.body2.copyWith(
                       color: item.opened ? Colors.grey : Colors.black,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     item.message,
                     maxLines: 4,
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.caption.copyWith(
                       color: item.opened ? Colors.grey : Colors.black,
-                      fontSize: 12,
                     ),
                   ),
                   Flexible(
@@ -137,9 +134,8 @@ class _InboxState extends State<Inbox> {
                       child: Text(
                         timeago.format(DateTime.parse(item.time)),
                         maxLines: 1,
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.caption.copyWith(
                           color: item.opened ? Colors.grey : Colors.black,
-                          fontSize: 12,
                           fontStyle: FontStyle.italic,
                         ),
                       ),

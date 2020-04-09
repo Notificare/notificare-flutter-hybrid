@@ -218,11 +218,7 @@ class _SettingsState extends State<Settings> {
       title: 'App version',
       adornmentBuilder: () => Text(
         packageInfo.version,
-        style: TextStyle(
-          fontFamily: 'Lato',
-          fontSize: 14,
-          fontWeight: FontWeight.w300,
-        ),
+        style: Theme.of(context).textTheme.caption.copyWith(fontSize: 14),
       ),
     ));
 
@@ -369,11 +365,6 @@ class _SettingsState extends State<Settings> {
       title: forStart ? 'From' : 'To',
       adornmentBuilder: () => Text(
         TimeOfDayUtils.format(timeOfDay),
-        style: TextStyle(
-          fontFamily: 'Lato',
-          fontSize: 14,
-          fontWeight: FontWeight.w300,
-        ),
       ),
       onTap: () => _handleDoNotDisturbTap(forStart),
     );
@@ -413,10 +404,7 @@ class _SectionListItem extends _ListItem {
       decoration: buildDecoration(context),
       child: Text(
         title.toUpperCase(),
-        style: TextStyle(
-          fontFamily: 'Lato',
-          fontSize: 14,
-        ),
+        style: Theme.of(context).textTheme.subhead,
       ),
     );
   }
@@ -444,18 +432,11 @@ class _PreferenceListItem extends _ListItem {
         contentPadding: EdgeInsets.all(16),
         title: Text(
           title,
-          style: TextStyle(
-            fontFamily: 'Lato',
-            fontSize: 16,
-          ),
+          style: Theme.of(context).textTheme.subhead,
         ),
         subtitle: Text(
           description,
-          style: TextStyle(
-            fontFamily: 'Lato',
-            fontSize: 12,
-            fontWeight: FontWeight.w300,
-          ),
+          style: Theme.of(context).textTheme.caption,
         ),
         trailing: Switch(
           value: checked,
@@ -488,10 +469,7 @@ class _AdornedListItem extends _ListItem {
       child: ListTile(
         title: Text(
           title,
-          style: TextStyle(
-            fontFamily: 'Lato',
-            fontSize: 16,
-          ),
+          style: Theme.of(context).textTheme.subhead,
         ),
         trailing: adornmentBuilder != null ? adornmentBuilder() : null,
         onTap: onTap != null ? onTap : null,
