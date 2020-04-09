@@ -22,27 +22,49 @@ class _SettingsState extends State<Settings> {
 
   _PreferenceListItem dndItem;
   TimeOfDay dndStart, dndEnd;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+
+    _notificare.onEventReceived.listen((event) async {
+      if (event.name == 'deviceRegistered') {
+        print('Received a device registered event.');
+
+        await Future.delayed(Duration(seconds: 1));
+        _loadData();
+      }
+    });
 
     _loadData();
   }
 
   Future<void> _loadData() async {
     try {
+      if (_isLoading) {
+        print('Already running a load op. Skipping...');
+        return;
+      }
+
+      print('Loading data.');
+      _isLoading = true;
+
       final notificationSettings = await _loadNotificationSettings();
       final tags = await _loadTags();
       final about = await _loadAbout();
 
       setState(() {
+        _clearListItems();
+
         notificationSettings.forEach((item) => _addListItem(item));
         tags.forEach((item) => _addListItem(item));
         about.forEach((item) => _addListItem(item));
       });
     } catch (err) {
       print('Something went wrong: $err');
+    } finally {
+      _isLoading = false;
     }
   }
 
@@ -76,7 +98,8 @@ class _SettingsState extends State<Settings> {
       ));
     }
 
-    if (await _notificare.isAllowedUIEnabled()) {
+    if (await _notificare.isRemoteNotificationsEnabled() &&
+        await _notificare.isAllowedUIEnabled()) {
       final dnd = await _notificare.fetchDoNotDisturb();
 
       dndItem = _PreferenceListItem(
@@ -231,9 +254,13 @@ class _SettingsState extends State<Settings> {
     _listKey.currentState?.insertItem(insertIndex);
   }
 
-  void _removeListItem(int index) {
+  void _removeListItem(int index, {bool animated = true}) {
     final removed = _listData.removeAt(index);
     _listKey.currentState?.removeItem(index, (context, animation) {
+      if (!animated) {
+        return null;
+      }
+
       return FadeTransition(
         opacity: CurvedAnimation(
           parent: animation,
@@ -249,6 +276,12 @@ class _SettingsState extends State<Settings> {
         ),
       );
     });
+  }
+
+  void _clearListItems() {
+    for (var i = _listData.length - 1; i >= 0; i--) {
+      _removeListItem(i, animated: false);
+    }
   }
 
   Future<void> _handleNotificationsUpdate(bool enabled) async {
