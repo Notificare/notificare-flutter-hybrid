@@ -2,6 +2,7 @@ import 'package:demo_flutter/ui/widgets/default_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Storage extends StatefulWidget {
   @override
@@ -57,26 +58,29 @@ class _StorageState extends State<Storage> {
   }
 
   Widget _buildAssetItem(NotificareAsset asset) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              child: _buildAssetImage(asset),
+    return InkWell(
+      onTap: () => _showAsset(asset),
+      child: Container(
+        padding: EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                child: _buildAssetImage(asset),
+              ),
             ),
-          ),
-          Padding(padding: EdgeInsets.only(top: 8)),
-          Center(
-            child: Text(
-              asset.assetTitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.body1,
+            Padding(padding: EdgeInsets.only(top: 8)),
+            Center(
+              child: Text(
+                asset.assetTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.body1,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -137,6 +141,25 @@ class _StorageState extends State<Storage> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _showAsset(NotificareAsset asset) async {
+    final contentType = asset.assetMetaData?.contentType;
+    switch (contentType) {
+      case 'image/jpeg':
+      case 'image/gif':
+      case 'image/png':
+      case 'video/mp4':
+      case 'application/pdf':
+      case 'text/html':
+      case 'audio/mp3':
+        if (asset.assetUrl != null) {
+          if (await canLaunch(asset.assetUrl)) {
+            launch(asset.assetUrl);
+          }
+        }
+        break;
     }
   }
 }
