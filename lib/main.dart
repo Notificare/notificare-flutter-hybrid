@@ -2,6 +2,7 @@ import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/ui/home.dart';
 import 'package:demo_flutter/ui/inbox.dart';
 import 'package:demo_flutter/ui/onboarding.dart';
+import 'package:demo_flutter/ui/regions.dart';
 import 'package:demo_flutter/ui/settings.dart';
 import 'package:demo_flutter/ui/splash.dart';
 import 'package:demo_flutter/ui/storage.dart';
@@ -70,6 +71,7 @@ class _MyAppState extends State<MyApp> {
         '/onboarding': (context) => Onboarding(),
         '/home': (context) => Home(),
         '/inbox': (context) => Inbox(),
+        '/regions': (context) => Regions(),
         '/settings': (context) => Settings(),
         '/storage': (context) => Storage(),
       },
