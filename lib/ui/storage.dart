@@ -31,9 +31,8 @@ class _StorageState extends State<Storage> {
         children: <Widget>[
           GridView.count(
             crossAxisCount: 2,
-            children: _assets.map<Widget>((asset) {
-              return Image.asset('assets/images/no_attachment.png');
-            }).toList(),
+            children:
+                _assets.map<Widget>((asset) => _buildAssetItem(asset)).toList(),
           ),
           Visibility(
             visible: !_isLoading && _assets.isEmpty,
@@ -57,6 +56,69 @@ class _StorageState extends State<Storage> {
     );
   }
 
+  Widget _buildAssetItem(NotificareAsset asset) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              child: _buildAssetImage(asset),
+            ),
+          ),
+          Padding(padding: EdgeInsets.only(top: 8)),
+          Center(
+            child: Text(
+              asset.assetTitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.body1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAssetImage(NotificareAsset asset) {
+    final contentType = asset.assetMetaData?.contentType;
+    var imageWidget;
+
+    switch (contentType) {
+      case 'image/jpeg':
+      case 'image/gif':
+      case 'image/png':
+        imageWidget = Image.network(asset.assetUrl);
+        break;
+      case 'video/mp4':
+        imageWidget = Image.asset('assets/images/asset_video.png');
+        break;
+      case 'application/pdf':
+        imageWidget = Image.asset('assets/images/asset_pdf.png');
+        break;
+      case 'application/json':
+        imageWidget = Image.asset('assets/images/asset_json.png');
+        break;
+      case 'text/javascript':
+        imageWidget = Image.asset('assets/images/asset_js.png');
+        break;
+      case 'text/css':
+        imageWidget = Image.asset('assets/images/asset_css.png');
+        break;
+      case 'text/html':
+        imageWidget = Image.asset('assets/images/asset_html.png');
+        break;
+      case 'audio/mp3':
+        imageWidget = Image.asset('assets/images/asset_sound.png');
+        break;
+      default:
+        imageWidget = Image.asset('assets/images/asset_text.png');
+    }
+
+    return imageWidget;
+  }
+
   Future<void> _fetchAssets(String group) async {
     setState(() {
       _isInitialRender = false;
@@ -76,37 +138,5 @@ class _StorageState extends State<Storage> {
         _isLoading = false;
       });
     }
-  }
-}
-
-class AssetsSearchDelegate extends SearchDelegate {
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () => query = '',
-      )
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () => close(context, null),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    print('Build results: $query');
-    return Container();
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    print('Build suggestions: $query');
-    return Container();
   }
 }
