@@ -16,6 +16,12 @@ class _ForgotPassword extends State<ForgotPassword> {
   String _email = '';
 
   @override
+  void dispose() {
+    super.dispose();
+    _emailTextController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
