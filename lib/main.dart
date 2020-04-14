@@ -1,11 +1,13 @@
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/ui/beacons.dart';
+import 'package:demo_flutter/ui/forgot_password.dart';
 import 'package:demo_flutter/ui/home.dart';
 import 'package:demo_flutter/ui/inbox.dart';
 import 'package:demo_flutter/ui/onboarding.dart';
 import 'package:demo_flutter/ui/regions.dart';
 import 'package:demo_flutter/ui/settings.dart';
 import 'package:demo_flutter/ui/sign_in.dart';
+import 'package:demo_flutter/ui/sign_up.dart';
 import 'package:demo_flutter/ui/splash.dart';
 import 'package:demo_flutter/ui/storage.dart';
 import 'package:flutter/foundation.dart';
@@ -83,6 +85,7 @@ class _MyAppState extends State<MyApp> {
         '/settings': (context) => Settings(),
         '/storage': (context) => Storage(),
         '/sign-in': (context) => SignIn(),
+        '/sign-up': (context) => SignUp(),
         '/forgot-password': (context) => ForgotPassword(),
       },
     );
