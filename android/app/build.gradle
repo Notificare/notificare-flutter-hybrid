@@ -70,4 +70,5 @@ dependencies {
 
     implementation 're.notifica:notificare-core:2.2.1'
     implementation 're.notifica:notificare-location:2.2.1'
+    implementation 're.notifica:notificare-beacon:2.2.1'
 }

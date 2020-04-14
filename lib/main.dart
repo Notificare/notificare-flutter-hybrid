@@ -1,4 +1,5 @@
 import 'package:demo_flutter/theme/notificare_colors.dart';
+import 'package:demo_flutter/ui/beacons.dart';
 import 'package:demo_flutter/ui/home.dart';
 import 'package:demo_flutter/ui/inbox.dart';
 import 'package:demo_flutter/ui/onboarding.dart';
@@ -76,6 +77,7 @@ class _MyAppState extends State<MyApp> {
         '/onboarding': (context) => Onboarding(),
         '/home': (context) => Home(),
         '/inbox': (context) => Inbox(),
+        '/beacons': (context) => Beacons(),
         '/regions': (context) => Regions(),
         '/settings': (context) => Settings(),
         '/storage': (context) => Storage(),
