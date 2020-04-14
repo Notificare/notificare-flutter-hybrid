@@ -81,6 +81,7 @@ class _MyAppState extends State<MyApp> {
         '/regions': (context) => Regions(),
         '/settings': (context) => Settings(),
         '/storage': (context) => Storage(),
+        '/forgot-password': (context) => ForgotPassword(),
       },
     );
   }
