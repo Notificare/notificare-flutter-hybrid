@@ -38,6 +38,7 @@ class _MyAppState extends State<MyApp> {
 
           if (await _notificare.isLocationServicesEnabled()) {
             _notificare.startLocationUpdates();
+            _notificare.enableBeacons();
           }
 
           break;
