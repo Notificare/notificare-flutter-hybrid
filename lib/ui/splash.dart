@@ -88,10 +88,9 @@ class _SplashState extends State<Splash> {
           .doCloudHostOperation('GET', '/api/passbook', {}, {}, {});
 
       final templates = passbook['passbooks'] as List;
-      templates.forEach((template) {
+      templates.forEach((template) async {
         if (template['_id'] == demoSourceConfig.memberCard.templateId) {
-          //StorageManager.setMemberCardTemplate(template);
-          // TODO parse and store the template
+          await StorageManager.setMemberCardTemplate(template);
         }
       });
     } catch (err) {
