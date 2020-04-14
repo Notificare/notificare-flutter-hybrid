@@ -73,9 +73,12 @@ class _BeaconsState extends State<Beacons> {
   Widget _buildBeaconItem(BuildContext context, int index) {
     final item = _beacons[index];
 
-    return ListTile(
-      key: ValueKey<NotificareBeacon>(item),
-      title: Text(item.beaconName),
+    return Container(
+      color: Colors.white,
+      child: ListTile(
+        key: ValueKey<NotificareBeacon>(item),
+        title: Text(item.beaconName),
+      ),
     );
   }
 }
