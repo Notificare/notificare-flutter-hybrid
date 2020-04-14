@@ -36,6 +36,10 @@ class _MyAppState extends State<MyApp> {
             _notificare.registerForNotifications();
           }
 
+          if (await _notificare.isLocationServicesEnabled()) {
+            _notificare.startLocationUpdates();
+          }
+
           break;
         case 'deviceRegistered':
           debugPrint('The device has been registered/updated.');
