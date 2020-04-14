@@ -43,7 +43,7 @@ class _StorageState extends State<Storage> {
                 _isInitialRender
                     ? 'Use the search option above to search for asset groups created in the dashboard.'
                     : 'No asset group found',
-                style: Theme.of(context).textTheme.body1,
+                style: Theme.of(context).textTheme.caption,
                 textAlign: TextAlign.center,
               ),
             ),

@@ -57,7 +57,7 @@ class _InboxState extends State<Inbox> {
             visible: !_loading && _inbox.isEmpty,
             child: Text(
               'No messages found',
-              style: Theme.of(context).textTheme.body1,
+              style: Theme.of(context).textTheme.caption,
             ),
           ),
           Visibility(
