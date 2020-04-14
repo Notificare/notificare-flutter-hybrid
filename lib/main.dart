@@ -5,6 +5,7 @@ import 'package:demo_flutter/ui/inbox.dart';
 import 'package:demo_flutter/ui/onboarding.dart';
 import 'package:demo_flutter/ui/regions.dart';
 import 'package:demo_flutter/ui/settings.dart';
+import 'package:demo_flutter/ui/sign_in.dart';
 import 'package:demo_flutter/ui/splash.dart';
 import 'package:demo_flutter/ui/storage.dart';
 import 'package:flutter/foundation.dart';
@@ -81,6 +82,7 @@ class _MyAppState extends State<MyApp> {
         '/regions': (context) => Regions(),
         '/settings': (context) => Settings(),
         '/storage': (context) => Storage(),
+        '/sign-in': (context) => SignIn(),
         '/forgot-password': (context) => ForgotPassword(),
       },
     );

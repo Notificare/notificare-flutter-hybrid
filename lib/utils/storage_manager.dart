@@ -6,6 +6,8 @@ class StorageManager {
   static final _kOnboardingStatus = 'onboarding_status';
   static final _kDemoSourceConfig = 'demo_source_config';
   static final _kCustomScript = 'custom_script';
+  static final _kMemberCardTemplate = 'member_card_template';
+  static final _kMemberCardSerial = 'member_card_serial';
 
   static Future<bool> getOnboardingStatus() async {
     final prefs = await SharedPreferences.getInstance();
@@ -49,5 +51,26 @@ class StorageManager {
   static Future<bool> setCustomScript(String value) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.setString(_kCustomScript, value);
+  }
+
+  static Future<Map<String, dynamic>> getMemberCardTemplate() async {
+    final prefs = await SharedPreferences.getInstance();
+    return jsonDecode(prefs.getString(_kMemberCardTemplate));
+  }
+
+  static Future<bool> setMemberCardTemplate(
+      Map<String, dynamic> template) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(_kMemberCardTemplate, jsonEncode(template));
+  }
+
+  static Future<String> getMemberCardSerial() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_kMemberCardSerial);
+  }
+
+  static Future<bool> setMemberCardSerial(String memberCardSerial) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString(_kMemberCardSerial, memberCardSerial);
   }
 }
