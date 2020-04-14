@@ -137,6 +137,7 @@ class _OnboardingState extends State<Onboarding> {
 
       if (permission == PermissionStatus.granted) {
         _notificare.startLocationUpdates();
+        _notificare.enableBeacons();
 
         // Do not show the on-boarding again, we're done.
         await StorageManager.setOnboardingStatus(true);
