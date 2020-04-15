@@ -4,6 +4,7 @@ import 'package:demo_flutter/ui/forgot_password.dart';
 import 'package:demo_flutter/ui/home.dart';
 import 'package:demo_flutter/ui/inbox.dart';
 import 'package:demo_flutter/ui/onboarding.dart';
+import 'package:demo_flutter/ui/profile.dart';
 import 'package:demo_flutter/ui/regions.dart';
 import 'package:demo_flutter/ui/settings.dart';
 import 'package:demo_flutter/ui/sign_in.dart';
@@ -87,6 +88,26 @@ class _MyAppState extends State<MyApp> {
         '/sign-in': (context) => SignIn(),
         '/sign-up': (context) => SignUp(),
         '/forgot-password': (context) => ForgotPassword(),
+        '/profile': (context) => FutureBuilder(
+              future: _notificare.isLoggedIn(),
+              builder: (context, snapshot) {
+                // TODO deal with the other possible scenarios
+                if (snapshot.connectionState == ConnectionState.done) {
+                  final isLoggedIn = snapshot.data as bool;
+                  if (isLoggedIn) {
+                    return Profile();
+                  } else {
+                    return SignIn();
+                  }
+                }
+
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            ),
       },
     );
   }
