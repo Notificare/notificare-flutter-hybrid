@@ -17,6 +17,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final _notificare = NotificarePushLib();
+  final _preferencesToggles = Map<String, bool>();
 
   Future<_ProfileResult> _profileFuture;
 
@@ -124,7 +125,42 @@ class _ProfileState extends State<Profile> {
 
     if (preferences.isEmpty) {
       items.add(_buildListTile(label: 'You have no preferences yet.'));
-    } else {}
+    } else {
+      preferences.forEach((preference) {
+        if (preference.preferenceType == 'choice') {
+          items.add(_buildListTile(
+            label: preference.preferenceLabel,
+            value: preference.preferenceOptions.first.segmentLabel,
+          ));
+        } else if (preference.preferenceType == 'single') {
+          items.add(_buildListTile(
+            label: preference.preferenceLabel,
+            trailing: Switch(
+              value: _preferencesToggles[preference.preferenceId],
+              onChanged: (value) async {
+                setState(() {
+                  _preferencesToggles[preference.preferenceId] = value;
+                });
+
+                await _updatePreferenceSingle(
+                  preference: preference,
+                  checked: value,
+                );
+              },
+            ),
+          ));
+        } else if (preference.preferenceType == 'select') {
+          items.add(_buildListTile(
+            label: preference.preferenceLabel,
+            value: preference.preferenceOptions
+                .where((e) => e.selected)
+                .length
+                .toString(),
+            onTap: () {},
+          ));
+        }
+      });
+    }
 
     // endregion
 
@@ -188,13 +224,23 @@ class _ProfileState extends State<Profile> {
     final user = await _notificare.fetchAccountDetails();
     final userPreferences = await _notificare.fetchUserPreferences();
 
+    _populateStateToggles(userPreferences);
+
     return _ProfileResult(profile: user, preferences: userPreferences);
   }
 
   void _reloadData() {
     setState(() {
+      _preferencesToggles.clear();
       _profileFuture = _loadData();
     });
+  }
+
+  void _populateStateToggles(List<NotificareUserPreference> preferences) {
+    preferences
+        .where((preference) => preference.preferenceType == 'single')
+        .forEach((preference) => _preferencesToggles[preference.preferenceId] =
+            preference.preferenceOptions.first.selected);
   }
 
   Future<void> _openEmailClient(NotificareUser profile) async {
@@ -267,6 +313,27 @@ class _ProfileState extends State<Profile> {
         message: 'Could not log you out.',
         onPositiveButtonPressed: () => _reloadData(),
       );
+    }
+  }
+
+  Future<void> _updatePreferenceSingle({
+    @required NotificareUserPreference preference,
+    @required bool checked,
+  }) async {
+    try {
+      final segment = NotificareUserSegment()
+        ..segmentId = preference.preferenceOptions.first.segmentId
+        ..segmentLabel = preference.preferenceOptions.first.segmentLabel;
+
+      if (checked) {
+        await _notificare.addSegmentToUserPreference(segment, preference);
+      } else {
+        await _notificare.removeSegmentFromUserPreference(segment, preference);
+      }
+    } catch (err) {
+      print('Failed to update user preference: $err');
+    } finally {
+      _reloadData();
     }
   }
 }
