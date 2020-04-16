@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -159,7 +160,7 @@ class _ProfileState extends State<Profile> {
                 .where((e) => e.selected)
                 .length
                 .toString(),
-            onTap: () {},
+            onTap: () => _changePreferenceMulti(preference),
           ));
         }
       });
@@ -331,6 +332,18 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  Future<void> _changePreferenceMulti(
+      NotificareUserPreference preference) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _PreferenceMultiChoiceForm(
+        preference: preference,
+        updateCallback: _updatePreferenceMultiChoice,
+      ),
+    );
+  }
+
   Future<void> _updatePreferenceChoice({
     @required NotificareUserPreference preference,
     @required String selectedValue,
@@ -363,6 +376,49 @@ class _ProfileState extends State<Profile> {
         await _notificare.addSegmentToUserPreference(segment, preference);
       } else {
         await _notificare.removeSegmentFromUserPreference(segment, preference);
+      }
+    } catch (err) {
+      print('Failed to update user preference: $err');
+    } finally {
+      _reloadData();
+    }
+  }
+
+  Future<void> _updatePreferenceMultiChoice({
+    @required NotificareUserPreference preference,
+    @required Map<String, bool> currentValues,
+  }) async {
+    final diffValues = HashMap<String, bool>.from(currentValues);
+
+    // Keep just the items that have been modified.
+    diffValues.removeWhere((segmentId, checked) {
+      final original = preference.preferenceOptions
+          .firstWhere((option) => option.segmentId == segmentId);
+
+      return original.selected == checked;
+    });
+
+    try {
+      for (var segmentId in diffValues.keys) {
+        final checked = diffValues[segmentId];
+
+        final segment = NotificareUserSegment()
+          ..segmentId = segmentId
+          ..segmentLabel = preference.preferenceOptions
+              .firstWhere((option) => option.segmentId == segmentId)
+              .segmentLabel;
+
+        if (checked) {
+          await _notificare.addSegmentToUserPreference(
+            segment,
+            preference,
+          );
+        } else {
+          await _notificare.removeSegmentFromUserPreference(
+            segment,
+            preference,
+          );
+        }
       }
     } catch (err) {
       print('Failed to update user preference: $err');
@@ -556,6 +612,92 @@ class _PreferenceChoiceFormState extends State<_PreferenceChoiceForm> {
       onChanged: enabled
           ? (value) {
               setState(() => _selectedValue = value);
+            }
+          : null,
+    );
+  }
+}
+
+// endregion
+
+// region Preference multi-choice form
+
+typedef _OnUpdatePreferenceMultiChoiceCallback = Future<void> Function({
+  @required NotificareUserPreference preference,
+  @required Map<String, bool> currentValues,
+});
+
+class _PreferenceMultiChoiceForm extends StatefulWidget {
+  final NotificareUserPreference preference;
+  final _OnUpdatePreferenceMultiChoiceCallback updateCallback;
+
+  _PreferenceMultiChoiceForm({
+    @required this.preference,
+    @required this.updateCallback,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _PreferenceMultiChoiceFormState();
+}
+
+class _PreferenceMultiChoiceFormState
+    extends State<_PreferenceMultiChoiceForm> {
+  final _checkBoxStateMap = Map<String, bool>();
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.preference.preferenceOptions.forEach(
+        (option) => _checkBoxStateMap[option.segmentId] = option.selected);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.preference.preferenceLabel),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: widget.preference.preferenceOptions
+            .map((option) =>
+                _buildCheckBoxForOption(option, enabled: !_isLoading))
+            .toList(),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Cancel'),
+          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+        ),
+        FlatButton(
+          child: Text('Save'),
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  try {
+                    await widget.updateCallback(
+                      preference: widget.preference,
+                      currentValues: _checkBoxStateMap,
+                    );
+                  } finally {
+                    Navigator.of(context).pop();
+                  }
+                },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCheckBoxForOption(NotificareUserPreferenceOption option,
+      {bool enabled = true}) {
+    return CheckboxListTile(
+      title: Text(option.segmentLabel),
+      value: _checkBoxStateMap[option.segmentId],
+      onChanged: enabled
+          ? (value) {
+              setState(() => _checkBoxStateMap[option.segmentId] = value);
             }
           : null,
     );
