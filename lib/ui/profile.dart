@@ -514,7 +514,7 @@ class _PreferenceChoiceFormState extends State<_PreferenceChoiceForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Change your password'),
+      title: Text(widget.preference.preferenceLabel),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
