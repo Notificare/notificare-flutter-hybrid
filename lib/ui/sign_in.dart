@@ -1,7 +1,6 @@
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/utils/dialog_utils.dart';
 import 'package:demo_flutter/utils/loyalty_utils.dart';
-import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 
@@ -149,14 +148,8 @@ class _SignInState extends State<SignIn> {
       await _notificare.login(_email, _password);
       final user = await _notificare.fetchAccountDetails();
 
-//      if (user != null && (user.accessToken == null || user.accessToken.isEmpty)) {
-//        _notificare.generateAccessToken();
-//      }
-
-      final memberCardSerial = await StorageManager.getMemberCardSerial();
-      if (memberCardSerial == null || memberCardSerial.isEmpty) {
-        await createMemberCard(user.userName, user.userID);
-      }
+      // Create and update the current member card
+      await createMemberCard(user.userName, user.userID);
 
       Navigator.of(context).popAndPushNamed('/profile');
     } catch (err) {
