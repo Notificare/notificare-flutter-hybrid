@@ -103,6 +103,7 @@ class _ProfileState extends State<Profile> {
     // Sign out
     items.add(_buildListTile(
       label: 'Sign Out',
+      labelStyle: TextStyle(color: Theme.of(context).errorColor),
       onTap: () => _signOut(),
     ));
 
@@ -138,22 +139,37 @@ class _ProfileState extends State<Profile> {
 
   Widget _buildListTile({
     @required String label,
+    TextStyle labelStyle,
     String value,
+    Widget trailing,
     GestureTapCallback onTap,
   }) {
+    assert((value == null && trailing == null) ||
+        (value != null && trailing == null) ||
+        (value == null && trailing != null));
+
+    TextStyle mergedLabelStyle = Theme.of(context).textTheme.body1;
+    if (labelStyle != null) {
+      mergedLabelStyle = mergedLabelStyle.merge(labelStyle);
+    }
+
+    final trailingWidget = trailing != null
+        ? trailing
+        : value != null
+            ? Text(
+                value,
+                style: Theme.of(context).textTheme.caption,
+              )
+            : null;
+
     return Ink(
       color: Colors.white,
       child: ListTile(
         title: Text(
           label,
-          style: Theme.of(context).textTheme.body1,
+          style: mergedLabelStyle,
         ),
-        trailing: value != null
-            ? Text(
-                value,
-                style: Theme.of(context).textTheme.caption,
-              )
-            : null,
+        trailing: trailingWidget,
         onTap: onTap,
       ),
     );
