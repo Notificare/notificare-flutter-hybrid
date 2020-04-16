@@ -18,6 +18,15 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final _notificare = NotificarePushLib();
 
+  Future<_ProfileResult> _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _profileFuture = _loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +34,7 @@ class _ProfileState extends State<Profile> {
         title: Text('Profile'),
       ),
       body: FutureBuilder(
-        future: _loadData(),
+        future: _profileFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (!snapshot.hasError && snapshot.hasData) {
@@ -183,7 +192,9 @@ class _ProfileState extends State<Profile> {
   }
 
   void _reloadData() {
-    setState(() {});
+    setState(() {
+      _profileFuture = _loadData();
+    });
   }
 
   Future<void> _openEmailClient(NotificareUser profile) async {
