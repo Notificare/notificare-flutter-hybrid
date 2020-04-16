@@ -130,7 +130,10 @@ class _ProfileState extends State<Profile> {
         if (preference.preferenceType == 'choice') {
           items.add(_buildListTile(
             label: preference.preferenceLabel,
-            value: preference.preferenceOptions.first.segmentLabel,
+            value: preference.preferenceOptions
+                .firstWhere((option) => option.selected)
+                ?.segmentLabel,
+            onTap: () => _changePreferenceChoice(preference),
           ));
         } else if (preference.preferenceType == 'single') {
           items.add(_buildListTile(
@@ -316,6 +319,37 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Future<void> _changePreferenceChoice(
+      NotificareUserPreference preference) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _PreferenceChoiceForm(
+        preference: preference,
+        updateCallback: _updatePreferenceChoice,
+      ),
+    );
+  }
+
+  Future<void> _updatePreferenceChoice({
+    @required NotificareUserPreference preference,
+    @required String selectedValue,
+  }) async {
+    try {
+      final segment = NotificareUserSegment()
+        ..segmentId = selectedValue
+        ..segmentLabel = preference.preferenceOptions
+            .firstWhere((option) => option.segmentId == selectedValue)
+            .segmentLabel;
+
+      await _notificare.addSegmentToUserPreference(segment, preference);
+    } catch (err) {
+      print('Failed to update user preference: $err');
+    } finally {
+      _reloadData();
+    }
+  }
+
   Future<void> _updatePreferenceSingle({
     @required NotificareUserPreference preference,
     @required bool checked,
@@ -438,6 +472,92 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
           },
         ),
       ],
+    );
+  }
+}
+
+// endregion
+
+// region Preference choice form
+
+typedef _OnUpdatePreferenceChoiceCallback = Future<void> Function({
+  @required NotificareUserPreference preference,
+  @required String selectedValue,
+});
+
+class _PreferenceChoiceForm extends StatefulWidget {
+  final NotificareUserPreference preference;
+  final _OnUpdatePreferenceChoiceCallback updateCallback;
+
+  _PreferenceChoiceForm({
+    @required this.preference,
+    @required this.updateCallback,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _PreferenceChoiceFormState();
+}
+
+class _PreferenceChoiceFormState extends State<_PreferenceChoiceForm> {
+  String _selectedValue;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedValue = widget.preference.preferenceOptions
+        .firstWhere((p) => p.selected)
+        ?.segmentId;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Change your password'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: widget.preference.preferenceOptions
+            .map((option) =>
+                _buildRadioButtonForOption(option, enabled: !_isLoading))
+            .toList(),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Cancel'),
+          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+        ),
+        FlatButton(
+          child: Text('Save'),
+          onPressed: _selectedValue == null || _isLoading
+              ? null
+              : () async {
+                  try {
+                    await widget.updateCallback(
+                      preference: widget.preference,
+                      selectedValue: _selectedValue,
+                    );
+                  } finally {
+                    Navigator.of(context).pop();
+                  }
+                },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRadioButtonForOption(NotificareUserPreferenceOption option,
+      {bool enabled = true}) {
+    return RadioListTile(
+      title: Text(option.segmentLabel),
+      value: option.segmentId,
+      groupValue: _selectedValue,
+      onChanged: enabled
+          ? (value) {
+              setState(() => _selectedValue = value);
+            }
+          : null,
     );
   }
 }
