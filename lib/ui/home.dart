@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:demo_flutter/models/demo_source_config.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
@@ -17,12 +19,14 @@ class _HomeState extends State<Home> {
   WebViewController _controller;
   bool _isLoading = true;
   DemoSourceConfig _demoSourceConfig;
+  StreamSubscription<NotificareEvent> _notificareEventSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    _notificare.onEventReceived.listen((event) async {
+    _notificareEventSubscription =
+        _notificare.onEventReceived.listen((event) async {
       if (event.name == 'badgeUpdated' && !_isLoading) {
         debugPrint('Received a badge update event.');
 
@@ -30,6 +34,12 @@ class _HomeState extends State<Home> {
         await _updateBadge(data.unreadCount);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _notificareEventSubscription.cancel();
   }
 
   @override
