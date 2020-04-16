@@ -589,12 +589,15 @@ class _PreferenceChoiceFormState extends State<_PreferenceChoiceForm> {
           onPressed: _selectedValue == null || _isLoading
               ? null
               : () async {
+                  setState(() => _isLoading = true);
+
                   try {
                     await widget.updateCallback(
                       preference: widget.preference,
                       selectedValue: _selectedValue,
                     );
                   } finally {
+                    setState(() => _isLoading = false);
                     Navigator.of(context).pop();
                   }
                 },
@@ -676,12 +679,15 @@ class _PreferenceMultiChoiceFormState
           onPressed: _isLoading
               ? null
               : () async {
+                  setState(() => _isLoading = true);
+
                   try {
                     await widget.updateCallback(
                       preference: widget.preference,
                       currentValues: _checkBoxStateMap,
                     );
                   } finally {
+                    setState(() => _isLoading = false);
                     Navigator.of(context).pop();
                   }
                 },
