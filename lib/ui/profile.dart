@@ -259,9 +259,8 @@ class _ProfileState extends State<Profile> {
     await FlutterEmailSender.send(email);
   }
 
-  Future<void> _openMemberCard() async {
-    //final serial = await StorageManager.getMemberCardSerial();
-    // TODO add passbookManager.open(serial);
+  void _openMemberCard() {
+    Navigator.of(context).pushNamed('/membercard');
   }
 
   Future<void> _changePassword() async {

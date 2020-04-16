@@ -3,6 +3,7 @@ import 'package:demo_flutter/ui/beacons.dart';
 import 'package:demo_flutter/ui/forgot_password.dart';
 import 'package:demo_flutter/ui/home.dart';
 import 'package:demo_flutter/ui/inbox.dart';
+import 'package:demo_flutter/ui/member_card.dart';
 import 'package:demo_flutter/ui/onboarding.dart';
 import 'package:demo_flutter/ui/profile.dart';
 import 'package:demo_flutter/ui/regions.dart';
@@ -11,6 +12,7 @@ import 'package:demo_flutter/ui/sign_in.dart';
 import 'package:demo_flutter/ui/sign_up.dart';
 import 'package:demo_flutter/ui/splash.dart';
 import 'package:demo_flutter/ui/storage.dart';
+import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
@@ -98,6 +100,43 @@ class _MyAppState extends State<MyApp> {
                     return Profile();
                   } else {
                     return SignIn();
+                  }
+                }
+
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            ),
+        '/membercard': (context) => FutureBuilder(
+              future: _notificare.isLoggedIn(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (!snapshot.hasError && snapshot.hasData) {
+                    final isLoggedIn = snapshot.data as bool;
+                    if (isLoggedIn) {
+                      return FutureBuilder(
+                        future: StorageManager.getMemberCardSerial(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (!snapshot.hasError && snapshot.hasData) {
+                              return MemberCard(serial: snapshot.data);
+                            }
+                          }
+
+                          return Scaffold(
+                            body: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return SignIn();
+                    }
                   }
                 }
 
