@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/ui/beacons.dart';
 import 'package:demo_flutter/ui/forgot_password.dart';
@@ -13,7 +15,6 @@ import 'package:demo_flutter/ui/sign_up.dart';
 import 'package:demo_flutter/ui/splash.dart';
 import 'package:demo_flutter/ui/storage.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
@@ -27,12 +28,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _notificare = NotificarePushLib();
+  StreamSubscription<NotificareEvent> _notificareSubscription;
 
   @override
   void initState() {
     super.initState();
     _notificare.launch();
-    _notificare.onEventReceived.listen((NotificareEvent event) async {
+    _notificareSubscription =
+        _notificare.onEventReceived.listen((NotificareEvent event) async {
       switch (event.name) {
         case 'ready':
           debugPrint('Notificare is ready.');
@@ -56,6 +59,12 @@ class _MyAppState extends State<MyApp> {
           debugPrint('Received Notificare event: ${event.name}');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _notificareSubscription.cancel();
   }
 
   @override
