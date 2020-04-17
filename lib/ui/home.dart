@@ -16,7 +16,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _notificare = NotificarePushLib();
-  WebViewController _controller;
+  final _controller = Completer<WebViewController>();
+
   bool _isLoading = true;
   DemoSourceConfig _demoSourceConfig;
   StreamSubscription<NotificareEvent> _notificareEventSubscription;
@@ -57,11 +58,11 @@ class _HomeState extends State<Home> {
           WebView(
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) async {
-              _controller = webViewController;
+              _controller.complete(webViewController);
 
               final config = await StorageManager.getDemoSourceConfig();
               _demoSourceConfig = config;
-              _controller.loadUrl(config.url);
+              webViewController.loadUrl(config.url);
             },
             onPageStarted: (String url) {
               debugPrint('Page started loading: $url');
@@ -80,9 +81,6 @@ class _HomeState extends State<Home> {
             },
           ),
           Visibility(
-            maintainSize: true,
-            maintainAnimation: true,
-            maintainState: true,
             visible: _isLoading,
             child: CircularProgressIndicator(),
           ),
@@ -92,27 +90,32 @@ class _HomeState extends State<Home> {
   }
 
   _updateBadge([int unreadCount]) async {
-    final script = await StorageManager.getCustomScript();
+    try {
+      final script = await StorageManager.getCustomScript();
 
-    if (unreadCount == null) {
-      final inbox = await _notificare.fetchInbox();
+      if (unreadCount == null) {
+        final inbox = await _notificare.fetchInbox();
 
-      unreadCount = 0;
-      for (var item in inbox) {
-        if (!item.opened) unreadCount++;
+        unreadCount = 0;
+        for (var item in inbox) {
+          if (!item.opened) unreadCount++;
+        }
       }
+
+      final badge = unreadCount > 0 ? unreadCount.toString() : '';
+      final js = script.replaceAll('%@', badge);
+
+      final controller = await _controller.future;
+      await controller.evaluateJavascript("javascript:(function() {" +
+          "var parent = document.getElementsByTagName('head').item(0);" +
+          "var script = document.createElement('script');" +
+          "script.type = 'text/javascript';" +
+          "script.innerHTML = $js;" +
+          "parent.appendChild(script)" +
+          "})()");
+    } catch (err) {
+      print('Failed to update the badge: $err');
     }
-
-    final badge = unreadCount > 0 ? unreadCount.toString() : '';
-    final js = script.replaceAll('%@', badge);
-
-    await _controller.evaluateJavascript("javascript:(function() {" +
-        "var parent = document.getElementsByTagName('head').item(0);" +
-        "var script = document.createElement('script');" +
-        "script.type = 'text/javascript';" +
-        "script.innerHTML = $js;" +
-        "parent.appendChild(script)" +
-        "})()");
   }
 
   bool _handleUrl(String url) {
