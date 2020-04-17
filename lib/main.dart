@@ -35,31 +35,25 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _notificare.launch();
     _notificareSubscription =
-        _notificare.onEventReceived.listen((NotificareEvent event) async {
+        _notificare.onEventReceived.listen((NotificareEvent event) {
+      print('Received Notificare event: ${event.name}');
+
       switch (event.name) {
         case 'ready':
-          debugPrint('Notificare is ready.');
-
-          if (await _notificare.isRemoteNotificationsEnabled()) {
-            debugPrint(
-                'Remote notifications are enabled. Registering for notifications...');
-            _notificare.registerForNotifications();
-          }
-
-          if (await _notificare.isLocationServicesEnabled()) {
-            _notificare.startLocationUpdates();
-            _notificare.enableBeacons();
-          }
-
+          _handleNotificareReady();
           break;
-        case 'deviceRegistered':
-          debugPrint('The device has been registered/updated.');
-          break;
-        default:
-          debugPrint('Received Notificare event: ${event.name}');
       }
     });
   }
+
+//  case 'activationTokenReceived':
+//  final data = event.data as NotificareActivationTokenReceivedEvent;
+//  _handleAccountValidation(data.token);
+//  break;
+//  case 'resetPasswordTokenReceived':
+//  final data = event.data as NotificareResetPasswordTokenReceivedEvent;
+//  _handlePasswordReset(data.token);
+//  break;
 
   @override
   void dispose() {
@@ -159,4 +153,18 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
+
+  Future<void> _handleNotificareReady() async {
+    if (await _notificare.isRemoteNotificationsEnabled()) {
+      print(
+          'Remote notifications are enabled. Registering for notifications...');
+      _notificare.registerForNotifications();
+    }
+
+    if (await _notificare.isLocationServicesEnabled()) {
+      _notificare.startLocationUpdates();
+      _notificare.enableBeacons();
+    }
+  }
+
 }

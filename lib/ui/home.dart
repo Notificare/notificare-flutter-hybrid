@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
     _notificareEventSubscription =
         _notificare.onEventReceived.listen((event) async {
       if (event.name == 'badgeUpdated' && !_isLoading) {
-        debugPrint('Received a badge update event.');
+        print('Received a badge update event.');
 
         final data = event.data as NotificareBadgeUpdatedEvent;
         await _updateBadge(data.unreadCount);
@@ -65,11 +65,11 @@ class _HomeState extends State<Home> {
               webViewController.loadUrl(config.url);
             },
             onPageStarted: (String url) {
-              debugPrint('Page started loading: $url');
+              print('Page started loading: $url');
               setState(() => _isLoading = true);
             },
             onPageFinished: (String url) async {
-              debugPrint('Page finished loading: $url');
+              print('Page finished loading: $url');
               setState(() => _isLoading = false);
 
               await _updateBadge();
