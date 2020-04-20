@@ -10,6 +10,7 @@ import 'package:demo_flutter/ui/member_card.dart';
 import 'package:demo_flutter/ui/onboarding.dart';
 import 'package:demo_flutter/ui/profile.dart';
 import 'package:demo_flutter/ui/regions.dart';
+import 'package:demo_flutter/ui/reset_password.dart';
 import 'package:demo_flutter/ui/settings.dart';
 import 'package:demo_flutter/ui/sign_in.dart';
 import 'package:demo_flutter/ui/sign_up.dart';
@@ -146,6 +147,14 @@ class _MyAppState extends State<MyApp> {
               ModalRoute.of(context).settings.arguments;
 
           return AccountValidation(
+            token: arguments.token,
+          );
+        },
+        '/reset-password': (context) {
+          final ResetPasswordRouteParams arguments =
+              ModalRoute.of(context).settings.arguments;
+
+          return ResetPassword(
             token: arguments.token,
           );
         },

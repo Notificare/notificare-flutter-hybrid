@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:demo_flutter/models/demo_source_config.dart';
 import 'package:demo_flutter/ui/account_validation.dart';
+import 'package:demo_flutter/ui/reset_password.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
@@ -39,17 +40,22 @@ class _HomeState extends State<Home> {
           }
           break;
         case 'activationTokenReceived':
-          print('Handling account validation');
+          print('Handling account validation.');
 
           final data = event.data as NotificareActivationTokenReceivedEvent;
           final arguments = AccountValidationRouteParams(data.token);
 
           Navigator.of(context).pushNamed('/validate', arguments: arguments);
           break;
-//        case 'resetPasswordTokenReceived':
-//          final data = event.data as NotificareResetPasswordTokenReceivedEvent;
-//          _handlePasswordReset(data.token);
-//          break;
+        case 'resetPasswordTokenReceived':
+          print('Handling password reset.');
+
+          final data = event.data as NotificareResetPasswordTokenReceivedEvent;
+          final arguments = ResetPasswordRouteParams(data.token);
+
+          Navigator.of(context)
+              .pushNamed('/reset-password', arguments: arguments);
+          break;
       }
     });
 
