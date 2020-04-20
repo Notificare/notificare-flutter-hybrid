@@ -291,8 +291,10 @@ class _SettingsState extends State<Settings> {
   Future<void> _handleLocationServicesUpdate(bool enabled) async {
     if (enabled) {
       await _notificare.startLocationUpdates();
+      await _notificare.enableBeacons();
     } else {
       await _notificare.stopLocationUpdates();
+      await _notificare.disableBeacons();
     }
   }
 
