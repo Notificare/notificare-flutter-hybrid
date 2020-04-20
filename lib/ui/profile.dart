@@ -132,7 +132,7 @@ class _ProfileState extends State<Profile> {
           items.add(_buildListTile(
             label: preference.preferenceLabel,
             value: preference.preferenceOptions
-                .firstWhere((option) => option.selected)
+                .firstWhere((option) => option.selected, orElse: () => null)
                 ?.segmentLabel,
             onTap: () => _changePreferenceChoice(preference),
           ));
