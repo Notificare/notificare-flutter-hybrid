@@ -90,9 +90,9 @@ class _MyAppState extends State<MyApp> {
         '/regions': (context) => Regions(),
         '/settings': (context) => Settings(),
         '/storage': (context) => Storage(),
-        '/sign-in': (context) => SignIn(),
-        '/sign-up': (context) => SignUp(),
-        '/forgot-password': (context) => ForgotPassword(),
+        '/signin': (context) => SignIn(),
+        '/signup': (context) => SignUp(),
+        '/forgotpassword': (context) => ForgotPassword(),
         '/profile': (context) => FutureBuilder(
               future: _notificare.isLoggedIn(),
               builder: (context, snapshot) {
