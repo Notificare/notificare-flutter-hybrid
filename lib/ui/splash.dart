@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:demo_flutter/utils/asset_loader.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +13,24 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   final _notificare = NotificarePushLib();
+  StreamSubscription<NotificareEvent> _notificareSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    _notificare.onEventReceived.listen((NotificareEvent event) {
+    _notificareSubscription =
+        _notificare.onEventReceived.listen((NotificareEvent event) {
       if (event.name != 'ready') return;
 
       _startup();
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _notificareSubscription.cancel();
   }
 
   @override
