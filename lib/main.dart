@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/ui/account_validation.dart';
+import 'package:demo_flutter/ui/analytics.dart';
 import 'package:demo_flutter/ui/beacons.dart';
 import 'package:demo_flutter/ui/forgot_password.dart';
 import 'package:demo_flutter/ui/home.dart';
@@ -142,6 +143,7 @@ class _MyAppState extends State<MyApp> {
                 );
               },
             ),
+        '/analytics': (content) => Analytics(),
         '/validate': (context) {
           final AccountValidationRouteParams arguments =
               ModalRoute.of(context).settings.arguments;

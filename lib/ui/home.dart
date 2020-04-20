@@ -7,7 +7,6 @@ import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
-import 'package:package_info/package_info.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -183,9 +182,6 @@ class _HomeState extends State<Home> {
     if (uri.scheme != null &&
         uri.scheme.startsWith(_demoSourceConfig.urlScheme)) {
       switch (uri.path) {
-        case '/analytics':
-          _handleAnalyticsClick();
-          break;
         default:
           // Handle recognized url schemes.
           Navigator.pushNamed(context, uri.path);
@@ -206,80 +202,5 @@ class _HomeState extends State<Home> {
 
     // Let the web view handle the url.
     return false;
-  }
-
-  Future<void> _handleAnalyticsClick() async {
-    final result = await _presentEventDialog();
-    if (result == null) return;
-
-    if (result.trim().length == 0) {
-      await _presentEventAlertDialog('Please insert a valid event name');
-    } else {
-      try {
-        await _notificare.logCustomEvent(result.trim(), {});
-        await _presentEventAlertDialog(
-            'Custom event registered successfully. Please check your dashboard to see the results for this event name.');
-      } catch (err) {
-        await _presentEventAlertDialog(
-            'We could not register the event at this time, please try again later.');
-      }
-    }
-  }
-
-  Future<String> _presentEventDialog() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    String eventName = '';
-
-    return await showDialog<String>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(packageInfo.appName),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Register Custom Event'),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Type an event name',
-              ),
-              onChanged: (value) => eventName = value,
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          FlatButton(
-            child: Text('Send'),
-            onPressed: () {
-              Navigator.of(context).pop(eventName);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _presentEventAlertDialog(String message) async {
-    final packageInfo = await PackageInfo.fromPlatform();
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(packageInfo.appName),
-        content: Text(message),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('OK'),
-            onPressed: () => Navigator.of(context).pop(),
-          )
-        ],
-      ),
-    );
   }
 }
