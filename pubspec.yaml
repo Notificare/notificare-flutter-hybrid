@@ -36,6 +36,7 @@ dependencies:
   google_maps_flutter: ^0.5.25+3
   location: ^3.0.2
   cached_network_image: ^2.1.0+1
+  uni_links: ^0.2.0
 
 dev_dependencies:
   flutter_test:
