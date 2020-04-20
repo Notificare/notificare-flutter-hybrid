@@ -164,6 +164,6 @@ class _SignInState extends State<SignIn> {
   }
 
   void _onRegisterPressed() {
-    Navigator.of(context).pushNamed('/sign-up');
+    Navigator.of(context).pushNamed('/signup');
   }
 }
