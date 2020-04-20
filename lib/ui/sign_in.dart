@@ -124,7 +124,7 @@ class _SignInState extends State<SignIn> {
   }
 
   void _onForgotPasswordPressed() {
-    Navigator.of(context).pushNamed('/forgot-password');
+    Navigator.of(context).pushNamed('/forgotpassword');
   }
 
   Future<void> _onSignInPressed() async {
