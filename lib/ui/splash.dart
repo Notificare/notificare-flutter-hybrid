@@ -19,6 +19,8 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
 
+    _notificare.launch();
+
     _notificareSubscription =
         _notificare.onEventReceived.listen((NotificareEvent event) {
       if (event.name != 'ready') return;
@@ -29,8 +31,8 @@ class _SplashState extends State<Splash> {
 
   @override
   void dispose() {
-    super.dispose();
     _notificareSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -46,6 +48,8 @@ class _SplashState extends State<Splash> {
   }
 
   void _startup() async {
+    print('Starting up, refresh the local config.');
+
     await _fetchConfig();
     await _fetchCustomScript();
     await _fetchPassbookTemplate();
@@ -54,12 +58,12 @@ class _SplashState extends State<Splash> {
   }
 
   _fetchConfig() async {
-    debugPrint('Fetching configuration assets.');
+    print('Fetching configuration assets.');
 
     try {
       final assets = await _notificare.fetchAssets("CONFIG");
       if (assets.isEmpty) {
-        debugPrint(
+        print(
             'The Notificare app is not correctly configured. Missing the CONFIG asset group and/or demoSourceConfig.json');
       }
 
@@ -67,29 +71,29 @@ class _SplashState extends State<Splash> {
           await AssetLoader.fetchDemoSourceConfig(assets.last.assetUrl);
       await StorageManager.setDemoSourceConfig(config);
     } catch (err) {
-      debugPrint('Failed to fetch the configuration assets: $err');
+      print('Failed to fetch the configuration assets: $err');
     }
   }
 
   _fetchCustomScript() async {
-    debugPrint('Fetching custom script assets.');
+    print('Fetching custom script assets.');
 
     try {
       final assets = await _notificare.fetchAssets("CUSTOMJS");
       if (assets.isEmpty) {
-        debugPrint(
+        print(
             'The Notificare app is not correctly configured. Missing the CUSTOMJS asset group and/or customScriptsDemo.js');
       }
 
       final customScript = await AssetLoader.fetchString(assets.last.assetUrl);
       await StorageManager.setCustomScript(customScript);
     } catch (err) {
-      debugPrint('Failed to fetch the custom script assets: $err');
+      print('Failed to fetch the custom script assets: $err');
     }
   }
 
   _fetchPassbookTemplate() async {
-    debugPrint('Fetching passbook template.');
+    print('Fetching passbook template.');
 
     try {
       final demoSourceConfig = await StorageManager.getDemoSourceConfig();
@@ -104,12 +108,13 @@ class _SplashState extends State<Splash> {
         }
       });
     } catch (err) {
-      debugPrint('Failed to fetch the passbook template: $err');
+      print('Failed to fetch the passbook template: $err');
     }
   }
 
   _continueToApp() async {
-    // TODO perhaps check the internet connectivity before moving forward
+    print('Continuing to the app.');
+    if (!mounted) return;
 
     if (await StorageManager.getOnboardingStatus()) {
       Navigator.pushReplacementNamed(context, '/home');
