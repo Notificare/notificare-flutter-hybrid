@@ -80,6 +80,10 @@ class _MyAppState extends State<MyApp> {
             fontWeight: FontWeight.w100,
           ),
         ),
+        buttonTheme: ButtonThemeData(
+          buttonColor: NotificareColors.outerSpace,
+          textTheme: ButtonTextTheme.primary,
+        ),
       ),
       home: Splash(),
       routes: {
