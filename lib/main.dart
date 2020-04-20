@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:demo_flutter/theme/notificare_colors.dart';
+import 'package:demo_flutter/ui/account_validation.dart';
 import 'package:demo_flutter/ui/beacons.dart';
 import 'package:demo_flutter/ui/forgot_password.dart';
 import 'package:demo_flutter/ui/home.dart';
@@ -18,7 +19,6 @@ import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
-import 'package:uni_links/uni_links.dart';
 
 void main() => runApp(MyApp());
 
@@ -29,7 +29,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _notificare = NotificarePushLib();
-  final _navigatorKey = GlobalKey<NavigatorState>();
 
   StreamSubscription _notificareSubscription;
   StreamSubscription _deepLinksSubscription;
@@ -39,7 +38,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     _setupNotificare();
-    _setupDeepLinking();
   }
 
   @override
@@ -53,7 +51,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: _navigatorKey,
       title: 'Demo Flutter',
       theme: ThemeData(
         scaffoldBackgroundColor: NotificareColors.wildSand,
@@ -144,6 +141,14 @@ class _MyAppState extends State<MyApp> {
                 );
               },
             ),
+        '/validate': (context) {
+          final AccountValidationRouteParams arguments =
+              ModalRoute.of(context).settings.arguments;
+
+          return AccountValidation(
+            token: arguments.token,
+          );
+        },
       },
     );
   }
@@ -159,42 +164,8 @@ class _MyAppState extends State<MyApp> {
         case 'ready':
           _handleNotificareReady();
           break;
-        case 'activationTokenReceived':
-          final data = event.data as NotificareActivationTokenReceivedEvent;
-          _handleAccountValidation(data.token);
-          break;
-        case 'resetPasswordTokenReceived':
-          final data = event.data as NotificareResetPasswordTokenReceivedEvent;
-          _handlePasswordReset(data.token);
-          break;
       }
     });
-  }
-
-  void _setupDeepLinking() async {
-    getUriLinksStream().listen((Uri uri) {
-      if (!mounted) return;
-      _handleDeepLink(uri);
-    });
-  }
-
-  Future<void> _handleDeepLink(Uri uri) async {
-    switch (uri.path) {
-      case '/inbox':
-      case '/settings':
-      case '/regions':
-      case '/profile':
-      case '/membercard':
-      case '/signin':
-      case '/signup':
-      case '/analytics':
-        _navigatorKey.currentState.pushNamed(uri.path);
-        break;
-      default:
-        final config = await StorageManager.getDemoSourceConfig();
-        if (config == null) return;
-      // TODO do something with it
-    }
   }
 
   Future<void> _handleNotificareReady() async {
@@ -209,5 +180,4 @@ class _MyAppState extends State<MyApp> {
       _notificare.enableBeacons();
     }
   }
-
 }

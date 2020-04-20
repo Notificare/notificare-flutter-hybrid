@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:demo_flutter/models/demo_source_config.dart';
+import 'package:demo_flutter/ui/account_validation.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 import 'package:package_info/package_info.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -28,13 +30,30 @@ class _HomeState extends State<Home> {
 
     _notificareEventSubscription =
         _notificare.onEventReceived.listen((event) async {
-      if (event.name == 'badgeUpdated' && !_isLoading) {
-        print('Received a badge update event.');
+      switch (event.name) {
+        case 'badgeUpdated':
+          print('Received a badge update event.');
+          if (!_isLoading) {
+            final data = event.data as NotificareBadgeUpdatedEvent;
+            await _updateBadge(data.unreadCount);
+          }
+          break;
+        case 'activationTokenReceived':
+          print('Handling account validation');
 
-        final data = event.data as NotificareBadgeUpdatedEvent;
-        await _updateBadge(data.unreadCount);
+          final data = event.data as NotificareActivationTokenReceivedEvent;
+          final arguments = AccountValidationRouteParams(data.token);
+
+          Navigator.of(context).pushNamed('/validate', arguments: arguments);
+          break;
+//        case 'resetPasswordTokenReceived':
+//          final data = event.data as NotificareResetPasswordTokenReceivedEvent;
+//          _handlePasswordReset(data.token);
+//          break;
       }
     });
+
+    _setupDeepLinking();
   }
 
   @override
@@ -89,7 +108,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _updateBadge([int unreadCount]) async {
+  Future<void> _updateBadge([int unreadCount]) async {
     try {
       final script = await StorageManager.getCustomScript();
 
@@ -115,6 +134,39 @@ class _HomeState extends State<Home> {
           "})()");
     } catch (err) {
       print('Failed to update the badge: $err');
+    }
+  }
+
+  void _setupDeepLinking() async {
+    try {
+      final initialUri = await getInitialUri();
+      if (initialUri != null) _handleDeepLink(initialUri);
+    } catch (err) {
+      print('Failed to get the initial deep link: $err');
+    }
+
+    getUriLinksStream().listen((Uri uri) {
+      if (!mounted) return;
+      _handleDeepLink(uri);
+    });
+  }
+
+  Future<void> _handleDeepLink(Uri uri) async {
+    switch (uri.path) {
+      case '/inbox':
+      case '/settings':
+      case '/regions':
+      case '/profile':
+      case '/membercard':
+      case '/signin':
+      case '/signup':
+      case '/analytics':
+        Navigator.of(context).pushNamed(uri.path);
+        break;
+      default:
+        final config = await StorageManager.getDemoSourceConfig();
+        if (config == null) return;
+      // TODO do something with it
     }
   }
 
