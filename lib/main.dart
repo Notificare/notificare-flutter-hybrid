@@ -18,6 +18,7 @@ import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
+import 'package:uni_links/uni_links.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,13 +32,14 @@ class _MyAppState extends State<MyApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   StreamSubscription _notificareSubscription;
+  StreamSubscription _deepLinksSubscription;
 
   @override
   void initState() {
     super.initState();
 
     _setupNotificare();
-        case 'ready':
+    _setupDeepLinking();
   }
 
   @override
@@ -167,6 +169,32 @@ class _MyAppState extends State<MyApp> {
           break;
       }
     });
+  }
+
+  void _setupDeepLinking() async {
+    getUriLinksStream().listen((Uri uri) {
+      if (!mounted) return;
+      _handleDeepLink(uri);
+    });
+  }
+
+  Future<void> _handleDeepLink(Uri uri) async {
+    switch (uri.path) {
+      case '/inbox':
+      case '/settings':
+      case '/regions':
+      case '/profile':
+      case '/membercard':
+      case '/signin':
+      case '/signup':
+      case '/analytics':
+        _navigatorKey.currentState.pushNamed(uri.path);
+        break;
+      default:
+        final config = await StorageManager.getDemoSourceConfig();
+        if (config == null) return;
+      // TODO do something with it
+    }
   }
 
   Future<void> _handleNotificareReady() async {
