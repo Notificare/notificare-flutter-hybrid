@@ -28,43 +28,30 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _notificare = NotificarePushLib();
-  StreamSubscription<NotificareEvent> _notificareSubscription;
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  StreamSubscription _notificareSubscription;
 
   @override
   void initState() {
     super.initState();
-    _notificare.launch();
-    _notificareSubscription =
-        _notificare.onEventReceived.listen((NotificareEvent event) {
-      print('Received Notificare event: ${event.name}');
 
-      switch (event.name) {
+    _setupNotificare();
         case 'ready':
-          _handleNotificareReady();
-          break;
-      }
-    });
   }
-
-//  case 'activationTokenReceived':
-//  final data = event.data as NotificareActivationTokenReceivedEvent;
-//  _handleAccountValidation(data.token);
-//  break;
-//  case 'resetPasswordTokenReceived':
-//  final data = event.data as NotificareResetPasswordTokenReceivedEvent;
-//  _handlePasswordReset(data.token);
-//  break;
 
   @override
   void dispose() {
+    _notificareSubscription?.cancel();
+    _deepLinksSubscription?.cancel();
+
     super.dispose();
-    _notificareSubscription.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      navigatorKey: _navigatorKey,
       title: 'Demo Flutter',
       theme: ThemeData(
         scaffoldBackgroundColor: NotificareColors.wildSand,
@@ -157,6 +144,29 @@ class _MyAppState extends State<MyApp> {
             ),
       },
     );
+  }
+
+  void _setupNotificare() {
+    _notificare.launch();
+
+    _notificareSubscription =
+        _notificare.onEventReceived.listen((NotificareEvent event) {
+      print('Received Notificare event: ${event.name}');
+
+      switch (event.name) {
+        case 'ready':
+          _handleNotificareReady();
+          break;
+        case 'activationTokenReceived':
+          final data = event.data as NotificareActivationTokenReceivedEvent;
+          _handleAccountValidation(data.token);
+          break;
+        case 'resetPasswordTokenReceived':
+          final data = event.data as NotificareResetPasswordTokenReceivedEvent;
+          _handlePasswordReset(data.token);
+          break;
+      }
+    });
   }
 
   Future<void> _handleNotificareReady() async {
