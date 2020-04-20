@@ -44,6 +44,12 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders = [
+                appScheme      : 're.notifica',
+                notificareHost : 'push.notifica.re',
+                notificareAppId: '5e845721b4f0f36c86bcb10a'
+        ]
     }
 
     buildTypes {
