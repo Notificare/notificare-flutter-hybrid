@@ -65,6 +65,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      title: 'Demo Flutter',
       theme: ThemeData(
         scaffoldBackgroundColor: NotificareColors.wildSand,
         primaryColor: NotificareColors.outerSpace,
