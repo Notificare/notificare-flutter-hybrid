@@ -143,7 +143,7 @@ class _MyAppState extends State<MyApp> {
                 );
               },
             ),
-        '/analytics': (content) => Analytics(),
+        '/analytics': (context) => Analytics(),
         '/validate': (context) {
           final AccountValidationRouteParams arguments =
               ModalRoute.of(context).settings.arguments;

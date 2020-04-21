@@ -168,6 +168,9 @@ class _HomeState extends State<Home> {
       case '/analytics':
         Navigator.of(context).pushNamed(uri.path);
         break;
+      case '/scan':
+        _notificare.startScannableSession();
+        break;
       default:
         final config = await StorageManager.getDemoSourceConfig();
         if (config == null) return;
@@ -181,11 +184,7 @@ class _HomeState extends State<Home> {
 
     if (uri.scheme != null &&
         uri.scheme.startsWith(_demoSourceConfig.urlScheme)) {
-      switch (uri.path) {
-        default:
-          // Handle recognized url schemes.
-          Navigator.pushNamed(context, uri.path);
-      }
+      _handleDeepLink(uri);
 
       return true;
     } else if (uri.host != null && uri.host != configHostUri.host) {
