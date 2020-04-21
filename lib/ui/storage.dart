@@ -1,4 +1,5 @@
-import 'package:demo_flutter/ui/widgets/default_app_bar.dart';
+import 'package:demo_flutter/ui/widgets/animated_app_bar.dart';
+import 'package:demo_flutter/ui/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
@@ -11,21 +12,48 @@ class Storage extends StatefulWidget {
 
 class _StorageState extends State<Storage> {
   final _notificare = NotificarePushLib();
+  final _assets = List<NotificareAsset>();
+  final _appBarKey = GlobalKey<AnimatedAppBarState>();
+
   bool _isInitialRender = true;
   bool _isLoading = false;
-  final _assets = List<NotificareAsset>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: DefaultAppBar(
-        title: Text('Storage'),
-        withSearch: true,
-        onSearchQueryChanged: (query) => setState(() {
-          _isInitialRender = true;
-          _assets.clear();
-        }),
-        onSearchSubmitted: (query) => _fetchAssets(query),
+      appBar: AnimatedAppBar(
+        key: _appBarKey,
+        primaryAppBar: AppBar(
+          title: Text('Storage'),
+          actions: <Widget>[
+            GestureDetector(
+              child: IconButton(
+                icon: Icon(Icons.search, color: Colors.white),
+                onPressed: null,
+              ),
+              onTapUp: (tapDetails) {
+                _appBarKey.currentState?.showSecondaryContent(
+                  animationOrigin: tapDetails.globalPosition,
+                );
+              },
+            )
+          ],
+        ),
+        secondaryContent: SearchBar(
+          onCancelSearch: () {
+            _appBarKey.currentState?.dismissSecondaryContent();
+          },
+          onSearchQueryChanged: (query) {
+            setState(() {
+              _isInitialRender = true;
+              _assets.clear();
+            });
+          },
+          onSearchSubmitted: (query) {
+            _fetchAssets(query);
+            _appBarKey.currentState?.dismissSecondaryContent();
+          },
+        ),
       ),
       body: Stack(
         alignment: AlignmentDirectional.center,
