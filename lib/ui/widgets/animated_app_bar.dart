@@ -15,7 +15,7 @@ class AnimatedAppBar extends StatefulWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  AnimatedAppBarState createState() => AnimatedAppBarState();
+  State<StatefulWidget> createState() => AnimatedAppBarState();
 }
 
 class AnimatedAppBarState extends State<AnimatedAppBar>
