@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
@@ -12,17 +14,19 @@ class Inbox extends StatefulWidget {
 
 class _InboxState extends State<Inbox> {
   final _notificare = NotificarePushLib();
-  bool _loading = false;
   final _inbox = List<NotificareInboxItem>();
+
+  bool _loading = false;
+  StreamSubscription _notificareSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    _notificare.onEventReceived.listen((event) {
+    _notificareSubscription = _notificare.onEventReceived.listen((event) {
       if (event.name == 'inboxLoaded') {
         final data = event.data as NotificareInboxLoadedEvent;
-        debugPrint('Notificare inbox reloaded.');
+        print('Notificare inbox reloaded.');
 
         setState(() {
           _inbox.clear();
@@ -32,6 +36,12 @@ class _InboxState extends State<Inbox> {
     });
 
     _fetchInbox();
+  }
+
+  @override
+  void dispose() {
+    _notificareSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -117,15 +127,15 @@ class _InboxState extends State<Inbox> {
                     item.title,
                     maxLines: 1,
                     style: Theme.of(context).textTheme.body2.copyWith(
-                      color: item.opened ? Colors.grey : Colors.black,
-                    ),
+                          color: item.opened ? Colors.grey : Colors.black,
+                        ),
                   ),
                   Text(
                     item.message,
                     maxLines: 4,
                     style: Theme.of(context).textTheme.caption.copyWith(
-                      color: item.opened ? Colors.grey : Colors.black,
-                    ),
+                          color: item.opened ? Colors.grey : Colors.black,
+                        ),
                   ),
                   Flexible(
                     fit: FlexFit.loose,
@@ -135,9 +145,9 @@ class _InboxState extends State<Inbox> {
                         timeago.format(DateTime.parse(item.time)),
                         maxLines: 1,
                         style: Theme.of(context).textTheme.caption.copyWith(
-                          color: item.opened ? Colors.grey : Colors.black,
-                          fontStyle: FontStyle.italic,
-                        ),
+                              color: item.opened ? Colors.grey : Colors.black,
+                              fontStyle: FontStyle.italic,
+                            ),
                       ),
                     ),
                   ),
@@ -157,13 +167,13 @@ class _InboxState extends State<Inbox> {
   }
 
   _onInboxItemTap(NotificareInboxItem item) async {
-    debugPrint('Opening Notificare inbox item.');
+    print('Opening Notificare inbox item.');
 
     try {
       _notificare.presentInboxItem(item);
-      debugPrint('Notification presented...');
+      print('Notification presented...');
     } catch (err) {
-      debugPrint('Failed to mark as read: $err');
+      print('Failed to mark as read: $err');
     }
   }
 }
