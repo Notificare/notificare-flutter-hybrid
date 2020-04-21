@@ -166,6 +166,7 @@ class _HomeState extends State<Home> {
       case '/signin':
       case '/signup':
       case '/analytics':
+      case '/storage':
         Navigator.of(context).pushNamed(uri.path);
         break;
       case '/scan':
