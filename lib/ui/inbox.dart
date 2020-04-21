@@ -241,7 +241,7 @@ class _InboxState extends State<Inbox> {
   }
 
   Future<void> _onInboxItemTap(NotificareInboxItem item) async {
-    if (_selectedItems.contains(item)) {
+    if (_selectedItems.isNotEmpty) {
       print('Handling item selection.');
 
       _onInboxItemLongPress(item);
