@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:demo_flutter/ui/widgets/animated_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
@@ -15,6 +16,8 @@ class Inbox extends StatefulWidget {
 class _InboxState extends State<Inbox> {
   final _notificare = NotificarePushLib();
   final _inbox = List<NotificareInboxItem>();
+  final _selectedItems = List<NotificareInboxItem>();
+  final _appBarKey = GlobalKey<AnimatedAppBarState>();
 
   bool _loading = false;
   StreamSubscription _notificareSubscription;
@@ -47,20 +50,48 @@ class _InboxState extends State<Inbox> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Inbox'),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.delete_sweep), onPressed: _clearInbox)
-        ],
+      appBar: AnimatedAppBar(
+        key: _appBarKey,
+        primaryAppBar: AppBar(
+          title: Text('Inbox'),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.delete_sweep), onPressed: _clearInbox)
+          ],
+        ),
+        secondaryContent: AppBar(
+          backgroundColor: Colors.white,
+          title: Text(
+            _selectedItems.length.toString(),
+            style: TextStyle(color: Colors.black54),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black54),
+            onPressed: () {
+              _selectedItems.clear();
+              _appBarKey.currentState?.dismissSecondaryContent();
+            },
+          ),
+          actionsIconTheme: IconThemeData(color: Colors.black54),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.drafts), onPressed: _markSelectionRead),
+            IconButton(icon: Icon(Icons.delete), onPressed: _deleteSelection),
+          ],
+        ),
       ),
       body: Stack(
         alignment: AlignmentDirectional.center,
         children: <Widget>[
-          ListView.separated(
-            itemCount: _inbox.length,
-            itemBuilder: _buildInboxItem,
-            separatorBuilder: (context, position) => Divider(
-              height: 1,
+          Visibility(
+            visible: !_loading,
+            maintainSize: true,
+            maintainState: true,
+            maintainAnimation: true,
+            child: ListView.separated(
+              itemCount: _inbox.length,
+              itemBuilder: _buildInboxItem,
+              separatorBuilder: (context, position) => Divider(
+                height: 1,
+              ),
             ),
           ),
           Visibility(
@@ -79,35 +110,13 @@ class _InboxState extends State<Inbox> {
     );
   }
 
-  _fetchInbox() async {
-    setState(() => _loading = true);
-
-    final result = await _notificare.fetchInbox();
-    setState(() {
-      _loading = false;
-
-      _inbox.clear();
-      _inbox.addAll(result);
-    });
-  }
-
-  _clearInbox() async {
-    setState(() => _loading = true);
-
-    try {
-      await _notificare.clearInbox();
-      await _fetchInbox();
-    } catch (err) {
-      setState(() => _loading = false);
-    }
-  }
-
   Widget _buildInboxItem(BuildContext context, int position) {
     final item = _inbox[position];
+    final isSelected = _selectedItems.contains(item);
 
     final cell = Container(
         height: 120,
-        color: Colors.white,
+        color: isSelected ? Colors.grey[200] : Colors.white,
         padding: EdgeInsets.all(10),
         child: Row(
           children: <Widget>[
@@ -160,13 +169,85 @@ class _InboxState extends State<Inbox> {
     return GestureDetector(
       child: cell,
       onTap: () => _onInboxItemTap(item),
-      onLongPress: () => {
-        // TODO implement the contextual app bar
-      },
+      onLongPress: () => _onInboxItemLongPress(item),
     );
   }
 
-  _onInboxItemTap(NotificareInboxItem item) async {
+  Future<void> _fetchInbox() async {
+    setState(() => _loading = true);
+
+    final result = await _notificare.fetchInbox();
+    setState(() {
+      _loading = false;
+
+      _inbox.clear();
+      _inbox.addAll(result);
+    });
+  }
+
+  Future<void> _clearInbox() async {
+    setState(() => _loading = true);
+
+    try {
+      await _notificare.clearInbox();
+      await _fetchInbox();
+    } catch (err) {
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _markSelectionRead() async {
+    setState(() => _loading = true);
+
+    try {
+      for (var item in _selectedItems) {
+        // The call below will trigger an inbox update, forcing the list
+        // to update its data.
+        await _notificare.markAsRead(item);
+      }
+    } catch (err) {
+      print('Failed to mark item as read: $err');
+    }
+
+    await Future.delayed(Duration(milliseconds: 250), () {
+      setState(() {
+        _loading = false;
+        _selectedItems.clear();
+        _appBarKey.currentState?.dismissSecondaryContent();
+      });
+    });
+  }
+
+  Future<void> _deleteSelection() async {
+    setState(() => _loading = true);
+
+    try {
+      for (var item in _selectedItems) {
+        // The call below will trigger an inbox update, forcing the list
+        // to update its data.
+        await _notificare.removeFromInbox(item);
+      }
+    } catch (err) {
+      print('Failed to delete item: $err');
+    }
+
+    await Future.delayed(Duration(milliseconds: 250), () {
+      setState(() {
+        _loading = false;
+        _selectedItems.clear();
+        _appBarKey.currentState?.dismissSecondaryContent();
+      });
+    });
+  }
+
+  Future<void> _onInboxItemTap(NotificareInboxItem item) async {
+    if (_selectedItems.contains(item)) {
+      print('Handling item selection.');
+
+      _onInboxItemLongPress(item);
+      return;
+    }
+
     print('Opening Notificare inbox item.');
 
     try {
@@ -175,5 +256,24 @@ class _InboxState extends State<Inbox> {
     } catch (err) {
       print('Failed to mark as read: $err');
     }
+  }
+
+  void _onInboxItemLongPress(NotificareInboxItem item) {
+    final selectionInProgress = _selectedItems.length > 0;
+    final isSelected = _selectedItems.contains(item);
+
+    setState(() {
+      if (!isSelected) {
+        _selectedItems.add(item);
+      } else {
+        _selectedItems.remove(item);
+      }
+
+      if (!selectionInProgress) {
+        _appBarKey.currentState?.showSecondaryContent();
+      } else if (_selectedItems.length == 0) {
+        _appBarKey.currentState?.dismissSecondaryContent();
+      }
+    });
   }
 }
