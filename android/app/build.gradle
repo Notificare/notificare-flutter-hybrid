@@ -18,7 +18,7 @@ if (flutterVersionCode == null) {
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '1.0.0'
 }
 
 apply plugin: 'com.android.application'
@@ -46,17 +46,25 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-                appScheme      : 're.notifica',
-                notificareHost : 'push.notifica.re',
-                notificareAppId: '5e845721b4f0f36c86bcb10a'
+                appScheme       : 're.notifica',
+                notificareHost  : 'push.notifica.re',
+                notificareAppId : '5e845721b4f0f36c86bcb10a',
+                googleMapsApiKey: localProperties.getProperty('app.googleMapsApiKey'),
         ]
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('release.keystore')
+            storePassword localProperties.getProperty('app.signing.store.password')
+            keyAlias localProperties.getProperty('app.signing.key.alias')
+            keyPassword localProperties.getProperty('app.signing.key.password')
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }
