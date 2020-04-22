@@ -19,6 +19,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _notificare = NotificarePushLib();
   final _controller = Completer<WebViewController>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _isLoading = true;
   DemoSourceConfig _demoSourceConfig;
@@ -55,6 +56,31 @@ class _HomeState extends State<Home> {
           Navigator.of(context)
               .pushNamed('/reset-password', arguments: arguments);
           break;
+        case 'scannableDetected':
+          final data = event.data as NotificareScannableDetectedEvent;
+          if (data.scannable.notification != null) {
+            print('Presenting scannable.');
+            await _notificare.presentScannable(data.scannable);
+          } else {
+            print('Scannable detected, but no notification in it.');
+
+            _scaffoldKey.currentState?.showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Custom scannable found. The app is responsible for handling it.',
+                ),
+              ),
+            );
+          }
+          break;
+        case 'scannableSessionInvalidatedWithError':
+          final data =
+              event.data as NotificareScannableSessionInvalidatedWithErrorEvent;
+
+          _scaffoldKey.currentState?.showSnackBar(
+            SnackBar(content: Text(data.error)),
+          );
+          break;
       }
     });
 
@@ -70,6 +96,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(0),
         child: AppBar(
