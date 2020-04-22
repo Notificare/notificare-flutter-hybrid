@@ -20,7 +20,7 @@ class _InboxState extends State<Inbox> {
   final _appBarKey = GlobalKey<AnimatedAppBarState>();
 
   bool _loading = false;
-  StreamSubscription _notificareSubscription;
+  StreamSubscription<NotificareEvent> _notificareSubscription;
 
   @override
   void initState() {
