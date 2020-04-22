@@ -161,6 +161,7 @@ class _HomeState extends State<Home> {
       case '/inbox':
       case '/settings':
       case '/regions':
+      case '/beacons':
       case '/profile':
       case '/membercard':
       case '/signin':
