@@ -251,7 +251,7 @@ class _InboxState extends State<Inbox> {
     print('Opening Notificare inbox item.');
 
     try {
-      _notificare.presentInboxItem(item);
+      await _notificare.presentInboxItem(item);
       print('Notification presented...');
     } catch (err) {
       print('Failed to mark as read: $err');
