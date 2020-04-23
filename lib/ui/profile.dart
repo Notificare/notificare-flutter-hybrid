@@ -467,6 +467,8 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextField(
+            keyboardType: TextInputType.visiblePassword,
+            obscureText: true,
             decoration: InputDecoration(
               hintText: 'New password',
               errorText: _passwordError,
@@ -478,6 +480,8 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
           ),
           Padding(padding: EdgeInsets.only(top: 20)),
           TextField(
+            keyboardType: TextInputType.visiblePassword,
+            obscureText: true,
             decoration: InputDecoration(
               hintText: 'Confirm new password',
               errorText: _passwordConfirmationError,
