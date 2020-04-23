@@ -67,11 +67,15 @@ class _ProfileState extends State<Profile> {
     // region Profile section
 
     // Avatar
-    items.add(CachedNetworkImage(
-      imageUrl: "https://gravatar.com/avatar/$emailHash?s=512",
-      placeholder: (context, url) => Image.asset('assets/images/account.png'),
-      errorWidget: (context, url, error) =>
-          Image.asset('assets/images/account.png'),
+    items.add(LimitedBox(
+      maxHeight: 500,
+      child: CachedNetworkImage(
+        fit: BoxFit.cover,
+        imageUrl: "https://gravatar.com/avatar/$emailHash?s=512",
+        placeholder: (context, url) => Image.asset('assets/images/account.png'),
+        errorWidget: (context, url, error) =>
+            Image.asset('assets/images/account.png'),
+      ),
     ));
 
     // Name
