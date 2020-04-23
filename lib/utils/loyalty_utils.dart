@@ -41,7 +41,7 @@ Future<void> createMemberCard(String name, String email) async {
     final notificare = NotificarePushLib();
     final result = await notificare.doCloudHostOperation(
       'POST',
-      '/api/pass',
+      '/pass',
       {},
       {},
       payload,

@@ -94,7 +94,7 @@ class _RegionsState extends State<Regions> {
   Future<void> _loadRegions() async {
     final result = await _notificare.doCloudHostOperation(
       'GET',
-      '/api/region',
+      '/region',
       {'skip': '0', 'limit': '250'},
       {},
       {},
