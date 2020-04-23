@@ -38,11 +38,21 @@ class _SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(40.0),
-          child: Image(image: AssetImage('assets/images/logo.png')),
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(40.0),
+            child: LimitedBox(
+              maxHeight: 100,
+              child: Container(
+                child: Center(
+                  child: Image.asset('assets/images/logo.png'),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -98,8 +108,13 @@ class _SplashState extends State<Splash> {
     try {
       final demoSourceConfig = await StorageManager.getDemoSourceConfig();
 
-      final passbook = await _notificare
-          .doCloudHostOperation('GET', '/api/passbook', {}, {}, {});
+      final passbook = await _notificare.doCloudHostOperation(
+        'GET',
+        '/passbook',
+        null,
+        null,
+        null,
+      );
 
       final templates = passbook['passbooks'] as List;
       templates.forEach((template) async {
