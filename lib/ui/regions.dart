@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
@@ -71,13 +74,11 @@ class _RegionsState extends State<Regions> {
 
   Future<void> _initialize() async {
     print('Initialize marker icons');
-    _markerIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(devicePixelRatio: 2.5),
-      'assets/images/map_marker.png',
+    _markerIcon = BitmapDescriptor.fromBytes(
+      await _getBytesFromAsset('assets/images/map_marker.png', 50),
     );
-    _userMarkerIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(devicePixelRatio: 2.5),
-      'assets/images/user_location.png',
+    _userMarkerIcon = BitmapDescriptor.fromBytes(
+      await _getBytesFromAsset('assets/images/user_location.png', 50),
     );
 
     print('Load user\'s initial location.');
@@ -171,5 +172,15 @@ class _RegionsState extends State<Regions> {
         position: LatLng(_currentLocation.latitude, _currentLocation.longitude),
       ));
     });
+  }
+
+  Future<Uint8List> _getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+        .buffer
+        .asUint8List();
   }
 }
