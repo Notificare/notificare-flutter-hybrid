@@ -27,6 +27,8 @@ class _RegionsState extends State<Regions> {
   final _polygons = Set<Polygon>();
   final _circles = Set<Circle>();
 
+  StreamSubscription _locationSubscription;
+
   BitmapDescriptor _markerIcon;
   BitmapDescriptor _userMarkerIcon;
   LocationData _currentLocation;
@@ -36,6 +38,12 @@ class _RegionsState extends State<Regions> {
     super.initState();
 
     _initialize();
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -86,7 +94,7 @@ class _RegionsState extends State<Regions> {
     _updateCurrentLocationMarker();
 
     print('Start listening to location updates.');
-    _location.onLocationChanged.listen((location) {
+    _locationSubscription = _location.onLocationChanged.listen((location) {
       _currentLocation = location;
       _updateCurrentLocationMarker();
     });
