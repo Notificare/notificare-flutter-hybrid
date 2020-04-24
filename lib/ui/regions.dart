@@ -96,8 +96,8 @@ class _RegionsState extends State<Regions> {
       'GET',
       '/region',
       {'skip': '0', 'limit': '250'},
-      {},
-      {},
+      null,
+      null,
     );
 
     final markers = Set<Marker>();
