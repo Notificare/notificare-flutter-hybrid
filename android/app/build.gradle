@@ -63,6 +63,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            manifestPlaceholders = [
+                    notificareAppId: '585702253cad4414df0e3b20',
+            ]
+        }
         release {
             signingConfig signingConfigs.release
         }
