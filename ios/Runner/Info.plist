@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Demo</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -12,22 +14,36 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>Demo</string>
-	<key>CFBundleDisplayName</key>
-	<string>Demo</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>re.notifica.demo</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>re.notifica</string>
+				<string>nc5e845721b4f0f36c86bcb10a</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>re.notifica</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NFCReaderUsageDescription</key>
-	<string>We will need access to your phone&apos;s NFC Reader in order to unlock new content.</string>
+	<string>We will need access to your phone's NFC Reader in order to unlock new content.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>We will need access to the device&apos;s camera to reply to notifications or scan QR codes.</string>
+	<string>We will need access to the device's camera to reply to notifications or scan QR codes.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>You will need to select the Always Allow option if you wish to receive geo-fencing and beacon notifications. Selecting the option Only While Using the App will prevent us from sending you these messages.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -65,21 +81,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>re.notifica.demo</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>re.notifica</string>
-				<string>nc5e845721b4f0f36c86bcb10a</string>
-			</array>
-		</dict>
-	</array>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>re.notifica</string>
-	</array>
 </dict>
 </plist>
