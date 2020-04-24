@@ -118,3 +118,7 @@ google-services.json
 
 # Notificare configuration
 notificareconfig.properties
+Notificare.plist
+
+# iOS secrets
+ios/Runner/Secrets.swift
