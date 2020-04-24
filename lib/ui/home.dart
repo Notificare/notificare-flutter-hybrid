@@ -81,6 +81,11 @@ class _HomeState extends State<Home> {
             SnackBar(content: Text(data.error)),
           );
           break;
+        case 'urlOpened':
+          final data = event.data as NotificareUrlOpenedEvent;
+          final uri = Uri.parse(data.url);
+          _handleDeepLink(uri);
+          break;
       }
     });
 
