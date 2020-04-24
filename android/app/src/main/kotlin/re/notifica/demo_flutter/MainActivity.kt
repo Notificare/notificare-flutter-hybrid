@@ -1,4 +1,4 @@
-package re.notifica.demo_flutter
+package re.notifica.demo
 
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity

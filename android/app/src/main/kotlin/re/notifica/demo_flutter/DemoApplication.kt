@@ -1,4 +1,4 @@
-package re.notifica.demo_flutter
+package re.notifica.demo
 
 import io.flutter.BuildConfig
 import io.flutter.app.FlutterApplication
