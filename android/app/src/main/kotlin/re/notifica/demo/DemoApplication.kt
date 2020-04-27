@@ -12,5 +12,6 @@ class DemoApplication: FlutterApplication() {
         Notificare.shared().launch(this)
         Notificare.shared().createDefaultChannel()
         Notificare.shared().intentReceiver = NotificareReceiver::class.java
+        Notificare.shared().smallIcon = R.drawable.ic_stat_notify_msg
     }
 }
