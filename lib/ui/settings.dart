@@ -30,10 +30,9 @@ class _SettingsState extends State<Settings> {
 
     _notificare.onEventReceived.listen((event) async {
       if (event.name == 'deviceRegistered') {
-        print('Received a device registered event.');
-
-        await Future.delayed(Duration(seconds: 1));
-        _loadData();
+        _loadDataDelayed();
+      } else if (event.name == 'notificationSettingsChanged') {
+        _loadDataDelayed();
       }
     });
 
@@ -66,6 +65,11 @@ class _SettingsState extends State<Settings> {
     } finally {
       _isLoading = false;
     }
+  }
+
+  Future<void> _loadDataDelayed() async {
+    await Future.delayed(Duration(seconds: 1));
+    _loadData();
   }
 
   Future<List<_ListItem>> _loadNotificationSettings() async {
