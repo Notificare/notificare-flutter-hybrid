@@ -78,6 +78,12 @@ target 'Runner' do
   end
 end
 
+target 'notification' do # use the name of the target you created previously
+  use_frameworks!
+
+  pod 'notificare-push-lib', '~> 2.2' # make sure you use the same version as your main target
+end
+
 # Prevent Cocoapods from embedding a second Flutter framework and causing an error with the new Xcode build system.
 install! 'cocoapods', :disable_input_output_paths => true
 
