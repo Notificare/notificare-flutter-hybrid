@@ -1,15 +1,44 @@
-# notificare-flutter-hybrid
-Official demo app for flutter
+Notificare's Flutter demo app
+=============================
 
-## Getting Started
+Example project on how to implement Notificare's SDK for Flutter.
 
-This project is a starting point for a Flutter application.
+# Getting started
 
-A few resources to get you started if this is your first Flutter project:
+### Setting up your secrets
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+You'll need to provide Google Maps API keys for Android and iOS. 
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To find out how to get those keys, please visit the according Google documentation at [Getting an API Key for Android](https://developers.google.com/maps/documentation/android-sdk/get-api-key) and [Getting an API Key for iOS](https://developers.google.com/maps/documentation/ios-sdk/get-api-key).
+
+#### Android
+
+On your `local.properties` file under the `android` folder, please add the following keys.
+
+```
+app.googleMapsApiKey=your_api_key
+```
+
+#### iOS
+
+Create a new file named `Secrets.swift` and paste in the following content.
+
+```
+struct Secrets {
+    static let googleMapsApiKey = "your_api_key"
+}
+```
+
+---
+
+Register for a trial:
+https://notificare.com/signup
+
+Sign in to the dashboard:
+https://dashboard.notifica.re
+
+For documentation please refer to:
+https://docs.notifica.re
+
+For support please use:
+https://support.notifica.re
