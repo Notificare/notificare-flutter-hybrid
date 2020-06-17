@@ -122,3 +122,6 @@ Notificare.plist
 
 # iOS secrets
 ios/Runner/Secrets.swift
+
+# Keep the lock file
+!pubspec.lock
