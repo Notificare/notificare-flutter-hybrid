@@ -133,7 +133,7 @@ class _InboxState extends State<Inbox> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    item.title,
+                    item.title ?? "",
                     maxLines: 1,
                     style: Theme.of(context).textTheme.body2.copyWith(
                           color: item.opened ? Colors.grey : Colors.black,
