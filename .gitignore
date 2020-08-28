@@ -53,6 +53,7 @@ flutter_*.png
 linked_*.ds
 unlinked.ds
 unlinked_spec.ds
+.last_build_id
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -115,6 +116,7 @@ app.*.symbols
 
 # Google services
 google-services.json
+agconnect-services.json
 
 # Notificare configuration
 notificareconfig.properties
