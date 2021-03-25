@@ -175,6 +175,12 @@ class _MyAppState extends State<MyApp> {
         case 'ready':
           _handleNotificareReady();
           break;
+
+        case 'remoteNotificationReceivedInBackground':
+          print('Received a background notification.');
+          final data = event.data as NotificareRemoteNotificationReceivedInBackgroundEvent;
+          _notificare.presentNotification(data.notification);
+          break;
       }
     });
   }
