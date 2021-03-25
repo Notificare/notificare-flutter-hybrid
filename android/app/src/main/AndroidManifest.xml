@@ -50,7 +50,11 @@
             android:name="re.notifica.ui.NotificationActivity"
             android:theme="@style/AppTheme.Translucent"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:hardwareAccelerated="true" />
+            android:hardwareAccelerated="true">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
         <activity
             android:name="re.notifica.ui.PassbookActivity"
