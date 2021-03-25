@@ -2,9 +2,9 @@ import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/utils/globals.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:location_permissions/location_permissions.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Onboarding extends StatefulWidget {
   @override
@@ -133,7 +133,7 @@ class _OnboardingState extends State<Onboarding> {
 
   _startLocationUpdates() async {
     try {
-      final permission = await LocationPermissions().requestPermissions();
+      final permission = await Permission.location.request();
 
       if (permission == PermissionStatus.granted) {
         _notificare.startLocationUpdates();

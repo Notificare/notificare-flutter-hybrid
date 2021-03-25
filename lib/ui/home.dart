@@ -7,7 +7,7 @@ import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:notificare_push_lib/notificare_events.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:uni_links2/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -182,7 +182,7 @@ class _HomeState extends State<Home> {
       print('Failed to get the initial deep link: $err');
     }
 
-    getUriLinksStream().listen((Uri uri) {
+    uriLinkStream.listen((Uri uri) {
       if (!mounted) return;
       _handleDeepLink(uri);
     });

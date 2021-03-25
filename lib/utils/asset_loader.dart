@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class AssetLoader {
   static Future<DemoSourceConfig> fetchDemoSourceConfig(String url) async {
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       return DemoSourceConfig.fromJson(json.decode(response.body));
@@ -14,7 +14,7 @@ class AssetLoader {
   }
 
   static Future<String> fetchString(String url) async {
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       return response.body;
