@@ -19,6 +19,7 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
 
+    _notificare.setPresentationOptions(['alert']);
     _notificare.launch();
 
     _notificareSubscription =
