@@ -226,6 +226,28 @@ class _SettingsState extends State<Settings> {
       ),
     ));
 
+    result.add(_AdornedListItem(
+      title: 'Launch Notificare',
+      adornmentBuilder: () => Icon(
+        Icons.keyboard_arrow_right,
+        color: NotificareColors.gray,
+      ),
+      onTap: () async {
+        await _notificare.launch();
+      },
+    ));
+
+    result.add(_AdornedListItem(
+      title: 'Un-launch Notificare',
+      adornmentBuilder: () => Icon(
+        Icons.keyboard_arrow_right,
+        color: NotificareColors.gray,
+      ),
+      onTap: () async {
+        await _notificare.unlaunch();
+      },
+    ));
+
     return result;
   }
 
