@@ -27,11 +27,11 @@ class _RegionsState extends State<Regions> {
   final _polygons = Set<Polygon>();
   final _circles = Set<Circle>();
 
-  StreamSubscription _locationSubscription;
+  StreamSubscription? _locationSubscription;
 
-  BitmapDescriptor _markerIcon;
-  BitmapDescriptor _userMarkerIcon;
-  LocationData _currentLocation;
+  late BitmapDescriptor _markerIcon;
+  late BitmapDescriptor _userMarkerIcon;
+  LocationData? _currentLocation;
 
   @override
   void initState() {
@@ -113,7 +113,7 @@ class _RegionsState extends State<Regions> {
     final polygons = Set<Polygon>();
     final circles = Set<Circle>();
 
-    final regions = result['regions'] as List<dynamic>;
+    final regions = result!['regions'] as List<dynamic>;
     regions.forEach((region) {
       final center = region['geometry']['coordinates'] as List;
 
@@ -165,7 +165,7 @@ class _RegionsState extends State<Regions> {
 
     final controller = await _mapsController.future;
     controller.moveCamera(CameraUpdate.newLatLng(
-        LatLng(_currentLocation.latitude, _currentLocation.longitude)));
+        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!)));
   }
 
   void _updateCurrentLocationMarker() {
@@ -177,7 +177,7 @@ class _RegionsState extends State<Regions> {
       _markers.add(Marker(
         markerId: MarkerId('user_marker'),
         icon: _userMarkerIcon,
-        position: LatLng(_currentLocation.latitude, _currentLocation.longitude),
+        position: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
       ));
     });
   }
@@ -187,7 +187,7 @@ class _RegionsState extends State<Regions> {
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
         .buffer
         .asUint8List();
   }

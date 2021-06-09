@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:demo_flutter/utils/time_of_day_utils.dart';
@@ -18,10 +20,10 @@ class _SettingsState extends State<Settings> {
 
   final _notificare = NotificarePushLib();
   final _listKey = GlobalKey<AnimatedListState>();
-  final _listData = List<_ListItem>();
+  final _listData = <_ListItem?>[];
 
-  _PreferenceListItem dndItem;
-  TimeOfDay dndStart, dndEnd;
+  _PreferenceListItem? dndItem;
+  TimeOfDay? dndStart, dndEnd;
   bool _isLoading = false;
 
   @override
@@ -72,8 +74,8 @@ class _SettingsState extends State<Settings> {
     _loadData();
   }
 
-  Future<List<_ListItem>> _loadNotificationSettings() async {
-    final result = List<_ListItem>();
+  Future<List<_ListItem?>> _loadNotificationSettings() async {
+    final result = <_ListItem?>[];
 
     result.add(_SectionListItem(title: 'Notification Settings'));
 
@@ -89,7 +91,7 @@ class _SettingsState extends State<Settings> {
     ));
 
     final demoSourceConfig = await StorageManager.getDemoSourceConfig();
-    if (demoSourceConfig.config.useLocationServices) {
+    if (demoSourceConfig!.config!.useLocationServices!) {
       result.add(_PreferenceListItem(
         title: 'Location Services',
         description:
@@ -110,7 +112,7 @@ class _SettingsState extends State<Settings> {
         title: 'Do Not Disturb',
         description:
             'Configure a period of time where notifications will not generate alerts in the notification center',
-        checked: dnd.start != null && dnd.end != null,
+        checked: dnd!.start != null && dnd.end != null,
         onCheckChanged: (item, checked) {
           setState(() {
             item.checked = checked;
@@ -146,13 +148,13 @@ class _SettingsState extends State<Settings> {
       result.add(dndItem);
 
       if (dnd.start != null && dnd.end != null) {
-        dndStart = TimeOfDayUtils.parse(dnd.start);
+        dndStart = TimeOfDayUtils.parse(dnd.start!);
         result.add(_createDoNotDisturbTimeListItem(
-            TimeOfDayUtils.parse(dnd.start), true));
+            TimeOfDayUtils.parse(dnd.start!), true));
 
-        dndEnd = TimeOfDayUtils.parse(dnd.end);
+        dndEnd = TimeOfDayUtils.parse(dnd.end!);
         result.add(_createDoNotDisturbTimeListItem(
-            TimeOfDayUtils.parse(dnd.end), false));
+            TimeOfDayUtils.parse(dnd.end!), false));
       }
     } else {
       dndItem = null;
@@ -162,7 +164,7 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<List<_ListItem>> _loadTags() async {
-    final result = List<_ListItem>();
+    final result = <_ListItem>[];
     final tags = await _notificare.fetchTags();
 
     result.add(_SectionListItem(title: 'Tags'));
@@ -204,7 +206,7 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<List<_ListItem>> _loadAbout() async {
-    final result = List<_ListItem>();
+    final result = <_ListItem>[];
     final packageInfo = await PackageInfo.fromPlatform();
 
     result.add(_SectionListItem(title: 'About this app'));
@@ -222,7 +224,7 @@ class _SettingsState extends State<Settings> {
       title: 'App version',
       adornmentBuilder: () => Text(
         packageInfo.version,
-        style: Theme.of(context).textTheme.caption.copyWith(fontSize: 14),
+        style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 14),
       ),
     ));
 
@@ -263,14 +265,14 @@ class _SettingsState extends State<Settings> {
         itemBuilder: (context, index, animation) {
           return FadeTransition(
             opacity: animation,
-            child: _listData[index].build(context, index),
+            child: _listData[index]!.build(context, index),
           );
         },
       ),
     );
   }
 
-  void _addListItem(_ListItem item, [int index]) {
+  void _addListItem(_ListItem? item, [int? index]) {
     final insertIndex = index != null ? index : _listData.length;
     _listData.insert(insertIndex, item);
     _listKey.currentState?.insertItem(insertIndex);
@@ -279,9 +281,9 @@ class _SettingsState extends State<Settings> {
   void _removeListItem(int index, {bool animated = true}) {
     final removed = _listData.removeAt(index);
     _listKey.currentState?.removeItem(index, (context, animation) {
-      if (!animated) {
-        return null;
-      }
+      // if (!animated) {
+      //   return null;
+      // }
 
       return FadeTransition(
         opacity: CurvedAnimation(
@@ -294,7 +296,7 @@ class _SettingsState extends State<Settings> {
             curve: Interval(0.0, 1.0),
           ),
           axisAlignment: 0.0,
-          child: removed.build(context),
+          child: removed!.build(context),
         ),
       );
     });
@@ -345,7 +347,7 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> _handleDoNotDisturbTap(bool forStart) async {
-    final initialValue = forStart ? dndStart : dndEnd;
+    final initialValue = forStart ? dndStart! : dndEnd!;
     final value = await showTimePicker(
       context: context,
       initialTime: initialValue,
@@ -368,15 +370,15 @@ class _SettingsState extends State<Settings> {
     });
 
     final dnd = NotificareDeviceDnD();
-    dnd.start = TimeOfDayUtils.format(forStart ? value : dndStart);
-    dnd.end = TimeOfDayUtils.format(!forStart ? value : dndEnd);
+    dnd.start = TimeOfDayUtils.format(forStart ? value : dndStart!);
+    dnd.end = TimeOfDayUtils.format(!forStart ? value : dndEnd!);
 
     await _notificare.updateDoNotDisturb(dnd);
   }
 
   Future<void> _openEmailClient() async {
-    final demoSourceConfig = await StorageManager.getDemoSourceConfig();
-    final recipients = demoSourceConfig.email.split(',');
+    final demoSourceConfig = await StorageManager.getDemoSourceConfig() ;
+    final recipients = demoSourceConfig!.email!.split(',');
 
     final email = Email(
       recipients: recipients,
@@ -388,11 +390,11 @@ class _SettingsState extends State<Settings> {
   }
 
   _AdornedListItem _createDoNotDisturbTimeListItem(
-      TimeOfDay timeOfDay, bool forStart) {
+      TimeOfDay? timeOfDay, bool forStart) {
     return _AdornedListItem(
       title: forStart ? 'From' : 'To',
       adornmentBuilder: () => Text(
-        TimeOfDayUtils.format(timeOfDay),
+        TimeOfDayUtils.format(timeOfDay!),
       ),
       onTap: () => _handleDoNotDisturbTap(forStart),
     );
@@ -405,9 +407,9 @@ typedef _PreferenceCheckChangedCallback = void Function(
 typedef _AdornmentBuilderCallback = Widget Function();
 
 abstract class _ListItem {
-  Widget build(BuildContext context, [int index]);
+  Widget build(BuildContext context, [int? index]);
 
-  Decoration buildDecoration(BuildContext context, {Color color}) {
+  Decoration buildDecoration(BuildContext context, {Color? color}) {
     final dividerColor = Theme.of(context).dividerColor;
 
     final decoration = BoxDecoration(
@@ -422,10 +424,10 @@ abstract class _ListItem {
 class _SectionListItem extends _ListItem {
   String title;
 
-  _SectionListItem({@required this.title});
+  _SectionListItem({required this.title});
 
   @override
-  Widget build(BuildContext context, [int index]) {
+  Widget build(BuildContext context, [int? index]) {
     return Container(
       key: ValueKey<_SectionListItem>(this),
       padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
@@ -445,14 +447,14 @@ class _PreferenceListItem extends _ListItem {
   _PreferenceCheckChangedCallback onCheckChanged;
 
   _PreferenceListItem({
-    @required this.title,
-    @required this.description,
+    required this.title,
+    required this.description,
     this.checked = false,
-    @required this.onCheckChanged,
+    required this.onCheckChanged,
   });
 
   @override
-  Widget build(BuildContext context, [int index]) {
+  Widget build(BuildContext context, [int? index]) {
     return Container(
       key: ValueKey<_PreferenceListItem>(this),
       decoration: buildDecoration(context, color: Colors.white),
@@ -477,17 +479,17 @@ class _PreferenceListItem extends _ListItem {
 
 class _AdornedListItem extends _ListItem {
   String title;
-  _AdornmentBuilderCallback adornmentBuilder;
-  GestureTapCallback onTap;
+  _AdornmentBuilderCallback? adornmentBuilder;
+  GestureTapCallback? onTap;
 
   _AdornedListItem({
-    @required this.title,
+    required this.title,
     this.adornmentBuilder,
     this.onTap,
   });
 
   @override
-  Widget build(BuildContext context, [int index]) {
+  Widget build(BuildContext context, [int? index]) {
     final isBeingRemoved = index == null;
 
     return Ink(
@@ -499,7 +501,7 @@ class _AdornedListItem extends _ListItem {
           title,
           style: Theme.of(context).textTheme.subhead,
         ),
-        trailing: adornmentBuilder != null ? adornmentBuilder() : null,
+        trailing: adornmentBuilder != null ? adornmentBuilder!() : null,
         onTap: onTap != null ? onTap : null,
       ),
     );

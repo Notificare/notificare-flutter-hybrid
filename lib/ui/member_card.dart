@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class MemberCard extends StatelessWidget {
-  final String serial;
+  final String? serial;
 
   MemberCard({this.serial});
 

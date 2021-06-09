@@ -5,7 +5,7 @@ class AccountValidation extends StatefulWidget {
   final String token;
 
   AccountValidation({
-    @required this.token,
+    required this.token,
   });
 
   @override
@@ -15,7 +15,7 @@ class AccountValidation extends StatefulWidget {
 class _AccountValidationState extends State<AccountValidation> {
   final _notificare = NotificarePushLib();
 
-  Future<void> _validationFuture;
+  Future<void>? _validationFuture;
 
   @override
   void initState() {

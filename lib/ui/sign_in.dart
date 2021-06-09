@@ -81,7 +81,7 @@ class _SignInState extends State<SignIn> {
                           'Forgotten password'.toUpperCase(),
                           style: Theme.of(context)
                               .textTheme
-                              .button
+                              .button!
                               .copyWith(fontWeight: FontWeight.w100),
                         ),
                         onPressed: _onForgotPasswordPressed,
@@ -149,7 +149,7 @@ class _SignInState extends State<SignIn> {
       final user = await _notificare.fetchAccountDetails();
 
       // Create and update the current member card
-      await createMemberCard(user.userName, user.userID);
+      await createMemberCard(user.userName!, user.userID!);
 
       Navigator.of(context).popAndPushNamed('/profile');
     } catch (err) {

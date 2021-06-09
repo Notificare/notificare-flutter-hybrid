@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 
 Future<void> showAlertDialog({
-  @required BuildContext context,
-  @required String message,
+  required BuildContext context,
+  required String? message,
   String positiveButtonLabel = 'OK',
-  VoidCallback onPositiveButtonPressed,
+  VoidCallback? onPositiveButtonPressed,
 }) async {
   final packageInfo = await PackageInfo.fromPlatform();
 
@@ -13,7 +13,7 @@ Future<void> showAlertDialog({
     context: context,
     builder: (_) => AlertDialog(
       title: Text(packageInfo.appName),
-      content: Text(message),
+      content: Text(message!),
       actions: <Widget>[
         FlatButton(
           child: Text(positiveButtonLabel),

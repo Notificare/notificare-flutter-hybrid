@@ -12,7 +12,7 @@ class Storage extends StatefulWidget {
 
 class _StorageState extends State<Storage> {
   final _notificare = NotificarePushLib();
-  final _assets = List<NotificareAsset>();
+  final _assets = <NotificareAsset>[];
   final _appBarKey = GlobalKey<AnimatedAppBarState>();
 
   bool _isInitialRender = true;
@@ -101,7 +101,7 @@ class _StorageState extends State<Storage> {
             Padding(padding: EdgeInsets.only(top: 8)),
             Center(
               child: Text(
-                asset.assetTitle,
+                asset.assetTitle!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.body1,
@@ -121,7 +121,7 @@ class _StorageState extends State<Storage> {
       case 'image/jpeg':
       case 'image/gif':
       case 'image/png':
-        imageWidget = Image.network(asset.assetUrl);
+        imageWidget = Image.network(asset.assetUrl!);
         break;
       case 'video/mp4':
         imageWidget = Image.asset('assets/images/asset_video.png');
@@ -183,8 +183,8 @@ class _StorageState extends State<Storage> {
       case 'text/html':
       case 'audio/mp3':
         if (asset.assetUrl != null) {
-          if (await canLaunch(asset.assetUrl)) {
-            launch(asset.assetUrl);
+          if (await canLaunch(asset.assetUrl!)) {
+            launch(asset.assetUrl!);
           }
         }
         break;

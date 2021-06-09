@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:crypto/crypto.dart';
 import 'package:demo_flutter/utils/dialog_utils.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +19,9 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final _notificare = NotificarePushLib();
-  final _preferencesToggles = Map<String, bool>();
+  final _preferencesToggles = Map<String?, bool?>();
 
-  Future<_ProfileResult> _profileFuture;
+  Future<_ProfileResult>? _profileFuture;
 
   @override
   void initState() {
@@ -40,7 +41,7 @@ class _ProfileState extends State<Profile> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (!snapshot.hasError && snapshot.hasData) {
-              return _buildUserProfile(context, snapshot.data);
+              return _buildUserProfile(context, snapshot.data as _ProfileResult);
             }
 
             return Container();
@@ -56,12 +57,12 @@ class _ProfileState extends State<Profile> {
   }
 
   Widget _buildUserProfile(BuildContext context, _ProfileResult result) {
-    final profile = result.profile;
-    final preferences = result.preferences;
+    final profile = result.profile!;
+    final preferences = result.preferences!;
 
-    final items = List<Widget>();
+    final items = <Widget>[];
 
-    final email = profile.userID.toLowerCase().trim();
+    final email = profile.userID!.toLowerCase().trim();
     final emailHash = md5.convert(utf8.encode(email)).toString();
 
     // region Profile section
@@ -134,17 +135,17 @@ class _ProfileState extends State<Profile> {
       preferences.forEach((preference) {
         if (preference.preferenceType == 'choice') {
           items.add(_buildListTile(
-            label: preference.preferenceLabel,
-            value: preference.preferenceOptions
-                .firstWhere((option) => option.selected, orElse: () => null)
+            label: preference.preferenceLabel!,
+            value: preference.preferenceOptions!
+                .firstWhereOrNull((option) => option.selected!)
                 ?.segmentLabel,
             onTap: () => _changePreferenceChoice(preference),
           ));
         } else if (preference.preferenceType == 'single') {
           items.add(_buildListTile(
-            label: preference.preferenceLabel,
+            label: preference.preferenceLabel!,
             trailing: Switch(
-              value: _preferencesToggles[preference.preferenceId],
+              value: _preferencesToggles[preference.preferenceId]!,
               onChanged: (value) async {
                 setState(() {
                   _preferencesToggles[preference.preferenceId] = value;
@@ -159,9 +160,9 @@ class _ProfileState extends State<Profile> {
           ));
         } else if (preference.preferenceType == 'select') {
           items.add(_buildListTile(
-            label: preference.preferenceLabel,
-            value: preference.preferenceOptions
-                .where((e) => e.selected)
+            label: preference.preferenceLabel!,
+            value: preference.preferenceOptions!
+                .where((e) => e.selected!)
                 .length
                 .toString(),
             onTap: () => _changePreferenceMulti(preference),
@@ -180,7 +181,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildSectionHeader({@required String label}) {
+  Widget _buildSectionHeader({required String label}) {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(
@@ -191,19 +192,19 @@ class _ProfileState extends State<Profile> {
   }
 
   Widget _buildListTile({
-    @required String label,
-    TextStyle labelStyle,
-    String value,
-    Widget trailing,
-    GestureTapCallback onTap,
+    required String label,
+    TextStyle? labelStyle,
+    String? value,
+    Widget? trailing,
+    GestureTapCallback? onTap,
   }) {
     assert((value == null && trailing == null) ||
         (value != null && trailing == null) ||
         (value == null && trailing != null));
 
-    TextStyle mergedLabelStyle = Theme.of(context).textTheme.body1;
+    TextStyle? mergedLabelStyle = Theme.of(context).textTheme.body1;
     if (labelStyle != null) {
-      mergedLabelStyle = mergedLabelStyle.merge(labelStyle);
+      mergedLabelStyle = mergedLabelStyle!.merge(labelStyle);
     }
 
     final trailingWidget = trailing != null
@@ -248,7 +249,7 @@ class _ProfileState extends State<Profile> {
     preferences
         .where((preference) => preference.preferenceType == 'single')
         .forEach((preference) => _preferencesToggles[preference.preferenceId] =
-            preference.preferenceOptions.first.selected);
+            preference.preferenceOptions!.first.selected);
   }
 
   Future<void> _openEmailClient(NotificareUser profile) async {
@@ -348,13 +349,13 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _updatePreferenceChoice({
-    @required NotificareUserPreference preference,
-    @required String selectedValue,
+    required NotificareUserPreference preference,
+    required String? selectedValue,
   }) async {
     try {
       final segment = NotificareUserSegment()
         ..segmentId = selectedValue
-        ..segmentLabel = preference.preferenceOptions
+        ..segmentLabel = preference.preferenceOptions!
             .firstWhere((option) => option.segmentId == selectedValue)
             .segmentLabel;
 
@@ -367,13 +368,13 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _updatePreferenceSingle({
-    @required NotificareUserPreference preference,
-    @required bool checked,
+    required NotificareUserPreference preference,
+    required bool checked,
   }) async {
     try {
       final segment = NotificareUserSegment()
-        ..segmentId = preference.preferenceOptions.first.segmentId
-        ..segmentLabel = preference.preferenceOptions.first.segmentLabel;
+        ..segmentId = preference.preferenceOptions!.first.segmentId
+        ..segmentLabel = preference.preferenceOptions!.first.segmentLabel;
 
       if (checked) {
         await _notificare.addSegmentToUserPreference(segment, preference);
@@ -388,14 +389,14 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _updatePreferenceMultiChoice({
-    @required NotificareUserPreference preference,
-    @required Map<String, bool> currentValues,
+    required NotificareUserPreference preference,
+    required Map<String, bool> currentValues,
   }) async {
     final diffValues = HashMap<String, bool>.from(currentValues);
 
     // Keep just the items that have been modified.
     diffValues.removeWhere((segmentId, checked) {
-      final original = preference.preferenceOptions
+      final original = preference.preferenceOptions!
           .firstWhere((option) => option.segmentId == segmentId);
 
       return original.selected == checked;
@@ -403,11 +404,11 @@ class _ProfileState extends State<Profile> {
 
     try {
       for (var segmentId in diffValues.keys) {
-        final checked = diffValues[segmentId];
+        final checked = diffValues[segmentId]!;
 
         final segment = NotificareUserSegment()
           ..segmentId = segmentId
-          ..segmentLabel = preference.preferenceOptions
+          ..segmentLabel = preference.preferenceOptions!
               .firstWhere((option) => option.segmentId == segmentId)
               .segmentLabel;
 
@@ -432,8 +433,8 @@ class _ProfileState extends State<Profile> {
 }
 
 class _ProfileResult {
-  final NotificareUser profile;
-  final List<NotificareUserPreference> preferences;
+  final NotificareUser? profile;
+  final List<NotificareUserPreference>? preferences;
 
   _ProfileResult({this.profile, this.preferences});
 }
@@ -447,8 +448,8 @@ class _ChangePasswordForm extends StatefulWidget {
   final VoidCallback onCancel;
 
   _ChangePasswordForm({
-    @required this.onSubmit,
-    @required this.onCancel,
+    required this.onSubmit,
+    required this.onCancel,
   });
 
   @override
@@ -459,8 +460,8 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
   String _password = '';
   String _passwordConfirmation = '';
 
-  String _passwordError;
-  String _passwordConfirmationError;
+  String? _passwordError;
+  String? _passwordConfirmationError;
 
   @override
   Widget build(BuildContext context) {
@@ -544,8 +545,8 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
 // region Preference choice form
 
 typedef _OnUpdatePreferenceChoiceCallback = Future<void> Function({
-  @required NotificareUserPreference preference,
-  @required String selectedValue,
+  required NotificareUserPreference preference,
+  required String? selectedValue,
 });
 
 class _PreferenceChoiceForm extends StatefulWidget {
@@ -553,8 +554,8 @@ class _PreferenceChoiceForm extends StatefulWidget {
   final _OnUpdatePreferenceChoiceCallback updateCallback;
 
   _PreferenceChoiceForm({
-    @required this.preference,
-    @required this.updateCallback,
+    required this.preference,
+    required this.updateCallback,
   });
 
   @override
@@ -562,26 +563,26 @@ class _PreferenceChoiceForm extends StatefulWidget {
 }
 
 class _PreferenceChoiceFormState extends State<_PreferenceChoiceForm> {
-  String _selectedValue;
+  String? _selectedValue;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
 
-    _selectedValue = widget.preference.preferenceOptions
-        .firstWhere((p) => p.selected)
-        ?.segmentId;
+    _selectedValue = widget.preference.preferenceOptions!
+        .firstWhere((p) => p.selected!)
+        .segmentId;
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.preference.preferenceLabel),
+      title: Text(widget.preference.preferenceLabel!),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: widget.preference.preferenceOptions
+        children: widget.preference.preferenceOptions!
             .map((option) =>
                 _buildRadioButtonForOption(option, enabled: !_isLoading))
             .toList(),
@@ -616,11 +617,11 @@ class _PreferenceChoiceFormState extends State<_PreferenceChoiceForm> {
   Widget _buildRadioButtonForOption(NotificareUserPreferenceOption option,
       {bool enabled = true}) {
     return RadioListTile(
-      title: Text(option.segmentLabel),
+      title: Text(option.segmentLabel!),
       value: option.segmentId,
       groupValue: _selectedValue,
       onChanged: enabled
-          ? (value) {
+          ? (dynamic value) {
               setState(() => _selectedValue = value);
             }
           : null,
@@ -633,8 +634,8 @@ class _PreferenceChoiceFormState extends State<_PreferenceChoiceForm> {
 // region Preference multi-choice form
 
 typedef _OnUpdatePreferenceMultiChoiceCallback = Future<void> Function({
-  @required NotificareUserPreference preference,
-  @required Map<String, bool> currentValues,
+  required NotificareUserPreference preference,
+  required Map<String, bool> currentValues,
 });
 
 class _PreferenceMultiChoiceForm extends StatefulWidget {
@@ -642,8 +643,8 @@ class _PreferenceMultiChoiceForm extends StatefulWidget {
   final _OnUpdatePreferenceMultiChoiceCallback updateCallback;
 
   _PreferenceMultiChoiceForm({
-    @required this.preference,
-    @required this.updateCallback,
+    required this.preference,
+    required this.updateCallback,
   });
 
   @override
@@ -660,18 +661,18 @@ class _PreferenceMultiChoiceFormState
   void initState() {
     super.initState();
 
-    widget.preference.preferenceOptions.forEach(
-        (option) => _checkBoxStateMap[option.segmentId] = option.selected);
+    widget.preference.preferenceOptions!.forEach(
+        (option) => _checkBoxStateMap[option.segmentId!] = option.selected!);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.preference.preferenceLabel),
+      title: Text(widget.preference.preferenceLabel!),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: widget.preference.preferenceOptions
+        children: widget.preference.preferenceOptions!
             .map((option) =>
                 _buildCheckBoxForOption(option, enabled: !_isLoading))
             .toList(),
@@ -706,11 +707,11 @@ class _PreferenceMultiChoiceFormState
   Widget _buildCheckBoxForOption(NotificareUserPreferenceOption option,
       {bool enabled = true}) {
     return CheckboxListTile(
-      title: Text(option.segmentLabel),
+      title: Text(option.segmentLabel!),
       value: _checkBoxStateMap[option.segmentId],
       onChanged: enabled
           ? (value) {
-              setState(() => _checkBoxStateMap[option.segmentId] = value);
+              setState(() => _checkBoxStateMap[option.segmentId!] = value!);
             }
           : null,
     );

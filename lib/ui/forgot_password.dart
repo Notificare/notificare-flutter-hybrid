@@ -96,7 +96,7 @@ class _ForgotPassword extends State<ForgotPassword> {
         onOkPressed: () => Navigator.of(context).pop(),
       );
     } catch (err) {
-      await _showAlertDialog(err.message);
+      await _showAlertDialog('err.message');
 
       setState(() {
         _isLoading = false;
@@ -104,15 +104,15 @@ class _ForgotPassword extends State<ForgotPassword> {
     }
   }
 
-  Future<void> _showAlertDialog(String message,
-      {VoidCallback onOkPressed}) async {
+  Future<void> _showAlertDialog(String? message,
+      {VoidCallback? onOkPressed}) async {
     final packageInfo = await PackageInfo.fromPlatform();
 
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(packageInfo.appName),
-        content: Text(message),
+        content: Text(message!),
         actions: <Widget>[
           FlatButton(
             child: Text('OK'),

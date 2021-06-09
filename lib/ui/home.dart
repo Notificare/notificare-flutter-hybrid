@@ -22,8 +22,8 @@ class _HomeState extends State<Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _isLoading = true;
-  DemoSourceConfig _demoSourceConfig;
-  StreamSubscription<NotificareEvent> _notificareEventSubscription;
+  late DemoSourceConfig _demoSourceConfig;
+  late StreamSubscription<NotificareEvent> _notificareEventSubscription;
 
   @override
   void initState() {
@@ -82,7 +82,16 @@ class _HomeState extends State<Home> {
           );
           break;
         case 'urlOpened':
+          print('=== URL OPENED ===');
+
           final data = event.data as NotificareUrlOpenedEvent;
+          final uri = Uri.parse(data.url);
+          _handleDeepLink(uri);
+          break;
+        case 'launchUrlReceived':
+          print('=== LAUNCH URL RECEIVED ===');
+
+          final data = event.data as NotificareLaunchUrlReceivedEvent;
           final uri = Uri.parse(data.url);
           _handleDeepLink(uri);
           break;
@@ -117,8 +126,8 @@ class _HomeState extends State<Home> {
               _controller.complete(webViewController);
 
               final config = await StorageManager.getDemoSourceConfig();
-              _demoSourceConfig = config;
-              webViewController.loadUrl(config.url);
+              _demoSourceConfig = config!;
+              webViewController.loadUrl(config.url!);
             },
             onPageStarted: (String url) {
               print('Page started loading: $url');
@@ -145,21 +154,22 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Future<void> _updateBadge([int unreadCount]) async {
+  Future<void> _updateBadge([int? unreadCount]) async {
     try {
       final script = await StorageManager.getCustomScript();
 
       if (unreadCount == null) {
         final inbox = await _notificare.fetchInbox();
 
-        unreadCount = 0;
+        int sum = 0;
         for (var item in inbox) {
-          if (!item.opened) unreadCount++;
+          if (!item.opened!) sum++;
         }
+        unreadCount = sum;
       }
 
       final badge = unreadCount > 0 ? unreadCount.toString() : '';
-      final js = script.replaceAll('%@', badge);
+      final js = script!.replaceAll('%@', badge);
 
       final controller = await _controller.future;
       await controller.evaluateJavascript("javascript:(function() {" +
@@ -175,17 +185,17 @@ class _HomeState extends State<Home> {
   }
 
   void _setupDeepLinking() async {
-    try {
-      final initialUri = await getInitialUri();
-      if (initialUri != null) _handleDeepLink(initialUri);
-    } catch (err) {
-      print('Failed to get the initial deep link: $err');
-    }
-
-    uriLinkStream.listen((Uri uri) {
-      if (!mounted) return;
-      _handleDeepLink(uri);
-    });
+    // try {
+    //   final initialUri = await getInitialUri();
+    //   if (initialUri != null) _handleDeepLink(initialUri);
+    // } catch (err) {
+    //   print('Failed to get the initial deep link: $err');
+    // }
+    //
+    // uriLinkStream.listen((Uri? uri) {
+    //   if (!mounted) return;
+    //   _handleDeepLink(uri!);
+    // });
   }
 
   Future<void> _handleDeepLink(Uri uri) async {
@@ -213,11 +223,11 @@ class _HomeState extends State<Home> {
   }
 
   bool _handleUrl(String url) {
-    final configHostUri = Uri.parse(_demoSourceConfig.url);
+    final configHostUri = Uri.parse(_demoSourceConfig.url!);
     final uri = Uri.parse(url);
 
     if (uri.scheme != null &&
-        uri.scheme.startsWith(_demoSourceConfig.urlScheme)) {
+        uri.scheme.startsWith(_demoSourceConfig.urlScheme!)) {
       _handleDeepLink(uri);
 
       return true;

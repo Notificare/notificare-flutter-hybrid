@@ -13,7 +13,7 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   final _notificare = NotificarePushLib();
-  StreamSubscription<NotificareEvent> _notificareSubscription;
+  late StreamSubscription<NotificareEvent> _notificareSubscription;
 
   @override
   void initState() {
@@ -79,7 +79,7 @@ class _SplashState extends State<Splash> {
       }
 
       final config =
-          await AssetLoader.fetchDemoSourceConfig(assets.last.assetUrl);
+          await AssetLoader.fetchDemoSourceConfig(assets.last.assetUrl!);
       await StorageManager.setDemoSourceConfig(config);
     } catch (err) {
       print('Failed to fetch the configuration assets: $err');
@@ -96,7 +96,7 @@ class _SplashState extends State<Splash> {
             'The Notificare app is not correctly configured. Missing the CUSTOMJS asset group and/or customScriptsDemo.js');
       }
 
-      final customScript = await AssetLoader.fetchString(assets.last.assetUrl);
+      final customScript = await AssetLoader.fetchString(assets.last.assetUrl!);
       await StorageManager.setCustomScript(customScript);
     } catch (err) {
       print('Failed to fetch the custom script assets: $err');
@@ -117,9 +117,9 @@ class _SplashState extends State<Splash> {
         null,
       );
 
-      final templates = passbook['passbooks'] as List;
+      final templates = passbook!['passbooks'] as List;
       templates.forEach((template) async {
-        if (template['_id'] == demoSourceConfig.memberCard.templateId) {
+        if (template['_id'] == demoSourceConfig!.memberCard!.templateId) {
           await StorageManager.setMemberCardTemplate(template);
         }
       });

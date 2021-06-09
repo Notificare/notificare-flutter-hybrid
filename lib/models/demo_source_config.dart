@@ -1,13 +1,13 @@
 class DemoSourceConfig {
-  final Config config;
-  final String url;
-  final String urlScheme;
-  final String host;
-  final String email;
-  final String api;
-  final List<String> nativeViews;
-  final Social social;
-  final MemberCard memberCard;
+  final Config? config;
+  final String? url;
+  final String? urlScheme;
+  final String? host;
+  final String? email;
+  final String? api;
+  final List<String>? nativeViews;
+  final Social? social;
+  final MemberCard? memberCard;
 
   DemoSourceConfig(
       {this.config,
@@ -35,21 +35,21 @@ class DemoSourceConfig {
   }
 
   Map<String, dynamic> toJson() => {
-        'config': config.toJson(),
+        'config': config!.toJson(),
         'url': url,
         'urlScheme': urlScheme,
         'host': host,
         'email': email,
         'api': api,
         'nativeViews': nativeViews,
-        'social': social.toJson(),
-        'memberCard': memberCard.toJson(),
+        'social': social!.toJson(),
+        'memberCard': memberCard!.toJson(),
       };
 }
 
 class Config {
-  final bool useLocationServices;
-  final bool useNavigationDrawer;
+  final bool? useLocationServices;
+  final bool? useNavigationDrawer;
 
   Config({this.useLocationServices, this.useNavigationDrawer});
 
@@ -67,8 +67,8 @@ class Config {
 }
 
 class Social {
-  final String facebook;
-  final String twitter;
+  final String? facebook;
+  final String? twitter;
 
   Social({this.facebook, this.twitter});
 
@@ -86,9 +86,9 @@ class Social {
 }
 
 class MemberCard {
-  final String templateId;
-  final List<MemberCardField> primaryFields;
-  final List<MemberCardField> secondaryFields;
+  final String? templateId;
+  final List<MemberCardField>? primaryFields;
+  final List<MemberCardField>? secondaryFields;
 
   MemberCard({this.templateId, this.primaryFields, this.secondaryFields});
 
@@ -106,14 +106,14 @@ class MemberCard {
 
   Map<String, dynamic> toJson() => {
     'templateId': templateId,
-    'primaryFields': primaryFields.map((value) => value.toJson()).toList(),
-    'secondaryFields': secondaryFields.map((value) => value.toJson()).toList(),
+    'primaryFields': primaryFields!.map((value) => value.toJson()).toList(),
+    'secondaryFields': secondaryFields!.map((value) => value.toJson()).toList(),
   };
 }
 
 class MemberCardField {
-  final String name;
-  final String email;
+  final String? name;
+  final String? email;
 
   MemberCardField({this.name, this.email});
 

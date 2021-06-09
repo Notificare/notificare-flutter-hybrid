@@ -13,8 +13,8 @@ class Onboarding extends StatefulWidget {
 
 class _OnboardingState extends State<Onboarding> {
   final _notificare = NotificarePushLib();
-  PageController _pageController;
-  final _onboardingAssets = List<NotificareAsset>();
+  PageController? _pageController;
+  final _onboardingAssets = <NotificareAsset>[];
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _OnboardingState extends State<Onboarding> {
   @override
   void dispose() {
     super.dispose();
-    _pageController.dispose();
+    _pageController!.dispose();
   }
 
   @override
@@ -49,7 +49,7 @@ class _OnboardingState extends State<Onboarding> {
               alignment: AlignmentDirectional.topCenter,
               fit: StackFit.expand,
               children: <Widget>[
-                Image.network(asset.assetUrl,
+                Image.network(asset.assetUrl!,
                     alignment: AlignmentDirectional.topCenter),
                 Container(
                   padding: EdgeInsets.fromLTRB(20, 0, 20, 100),
@@ -61,9 +61,9 @@ class _OnboardingState extends State<Onboarding> {
                       Container(
                         padding: EdgeInsets.only(bottom: 30),
                         child: Text(
-                          asset.assetTitle,
+                          asset.assetTitle!,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.title.copyWith(
+                          style: Theme.of(context).textTheme.title!.copyWith(
                             color: NotificareColors.gray,
                           ),
                         ),
@@ -75,7 +75,7 @@ class _OnboardingState extends State<Onboarding> {
                           color: NotificareColors.outerSpace,
                           textColor: Colors.white,
                           padding: EdgeInsets.all(15),
-                          child: Text(asset.assetButton.label.toUpperCase()),
+                          child: Text(asset.assetButton!.label!.toUpperCase()),
                           onPressed: () => _onButtonPressed(asset),
                         ),
                       )
@@ -103,7 +103,7 @@ class _OnboardingState extends State<Onboarding> {
   }
 
   _onButtonPressed(NotificareAsset asset) {
-    switch (asset.assetButton.action) {
+    switch (asset.assetButton!.action) {
       case 'goToLocationServices':
         _notificare.registerForNotifications();
         break;
@@ -112,17 +112,17 @@ class _OnboardingState extends State<Onboarding> {
         return;
     }
 
-    _pageController.nextPage(
+    _pageController!.nextPage(
       duration: kViewPagerAnimationDuration,
       curve: kViewPagerAnimationCurve,
     );
   }
 
   Future<bool> _onWillPop() {
-    if (_pageController.page.round() == _pageController.initialPage)
+    if (_pageController!.page!.round() == _pageController!.initialPage)
       return Future.value(true);
     else {
-      _pageController.previousPage(
+      _pageController!.previousPage(
         duration: kViewPagerAnimationDuration,
         curve: kViewPagerAnimationCurve,
       );

@@ -7,7 +7,7 @@ class ResetPassword extends StatefulWidget {
   final String token;
 
   ResetPassword({
-    @required this.token,
+    required this.token,
   });
 
   @override
@@ -128,7 +128,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     } catch (err) {
       await showAlertDialog(
         context: context,
-        message: err.message,
+        message: 'err.message',
       );
 
       setState(() => _isLoading = false);

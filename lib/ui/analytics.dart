@@ -14,7 +14,7 @@ class _AnalyticsState extends State<Analytics> {
 
   bool _isLoading = false;
   String _eventName = '';
-  String _eventNameError;
+  String? _eventNameError;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +115,7 @@ class _AnalyticsState extends State<Analytics> {
     } catch (err) {
       await showAlertDialog(
         context: context,
-        message: err.message,
+        message: 'err.message',
       );
 
       setState(() => _isLoading = false);

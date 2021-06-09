@@ -15,12 +15,12 @@ class Inbox extends StatefulWidget {
 
 class _InboxState extends State<Inbox> {
   final _notificare = NotificarePushLib();
-  final _inbox = List<NotificareInboxItem>();
-  final _selectedItems = List<NotificareInboxItem>();
+  final _inbox = <NotificareInboxItem>[];
+  final _selectedItems = <NotificareInboxItem>[];
   final _appBarKey = GlobalKey<AnimatedAppBarState>();
 
   bool _loading = false;
-  StreamSubscription<NotificareEvent> _notificareSubscription;
+  StreamSubscription<NotificareEvent>? _notificareSubscription;
 
   @override
   void initState() {
@@ -28,12 +28,12 @@ class _InboxState extends State<Inbox> {
 
     _notificareSubscription = _notificare.onEventReceived.listen((event) {
       if (event.name == 'inboxLoaded') {
-        final data = event.data as NotificareInboxLoadedEvent;
+        final data = event.data as NotificareInboxLoadedEvent?;
         print('Notificare inbox reloaded.');
 
         setState(() {
           _inbox.clear();
-          _inbox.addAll(data.inbox);
+          _inbox.addAll(data!.inbox);
         });
       }
     });
@@ -121,9 +121,9 @@ class _InboxState extends State<Inbox> {
         child: Row(
           children: <Widget>[
             Opacity(
-              opacity: item.opened ? 0.5 : 1,
+              opacity: item.opened! ? 0.5 : 1,
               child: item.attachment?.uri != null
-                  ? Image.network(item.attachment.uri)
+                  ? Image.network(item.attachment!.uri!)
                   : Image.asset('assets/images/no_attachment.png'),
             ),
             Padding(padding: EdgeInsets.only(right: 10)),
@@ -135,15 +135,15 @@ class _InboxState extends State<Inbox> {
                   Text(
                     item.title ?? "",
                     maxLines: 1,
-                    style: Theme.of(context).textTheme.body2.copyWith(
-                          color: item.opened ? Colors.grey : Colors.black,
+                    style: Theme.of(context).textTheme.body2!.copyWith(
+                          color: item.opened! ? Colors.grey : Colors.black,
                         ),
                   ),
                   Text(
-                    item.message,
+                    item.message!,
                     maxLines: 4,
-                    style: Theme.of(context).textTheme.caption.copyWith(
-                          color: item.opened ? Colors.grey : Colors.black,
+                    style: Theme.of(context).textTheme.caption!.copyWith(
+                          color: item.opened! ? Colors.grey : Colors.black,
                         ),
                   ),
                   Flexible(
@@ -151,10 +151,10 @@ class _InboxState extends State<Inbox> {
                     child: Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
-                        timeago.format(DateTime.parse(item.time)),
+                        timeago.format(DateTime.parse(item.time!)),
                         maxLines: 1,
-                        style: Theme.of(context).textTheme.caption.copyWith(
-                              color: item.opened ? Colors.grey : Colors.black,
+                        style: Theme.of(context).textTheme.caption!.copyWith(
+                              color: item.opened! ? Colors.grey : Colors.black,
                               fontStyle: FontStyle.italic,
                             ),
                       ),

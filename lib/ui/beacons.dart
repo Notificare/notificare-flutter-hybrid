@@ -12,9 +12,9 @@ class Beacons extends StatefulWidget {
 
 class _BeaconsState extends State<Beacons> {
   final _notificare = NotificarePushLib();
-  final _beacons = List<NotificareBeacon>();
+  final _beacons = <NotificareBeacon>[];
 
-  StreamSubscription<NotificareEvent> _notificareEventSubscription;
+  late StreamSubscription<NotificareEvent> _notificareEventSubscription;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _BeaconsState extends State<Beacons> {
       color: Colors.white,
       child: ListTile(
         key: ValueKey<NotificareBeacon>(item),
-        title: Text(item.beaconName),
+        title: Text(item.beaconName!),
       ),
     );
   }

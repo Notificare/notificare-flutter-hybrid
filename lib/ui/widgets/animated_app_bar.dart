@@ -5,11 +5,11 @@ class AnimatedAppBar extends StatefulWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 
-  final AppBar primaryAppBar;
-  final Widget secondaryContent;
+  final AppBar? primaryAppBar;
+  final Widget? secondaryContent;
 
   AnimatedAppBar({
-    Key key,
+    Key? key,
     this.primaryAppBar,
     this.secondaryContent,
   }) : super(key: key);
@@ -20,10 +20,10 @@ class AnimatedAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class AnimatedAppBarState extends State<AnimatedAppBar>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation _animation;
+  late AnimationController _controller;
+  late Animation _animation;
 
-  double _rippleStartX, _rippleStartY;
+  double? _rippleStartX, _rippleStartY;
   bool _secondaryContentVisible = false;
 
   @override
@@ -45,7 +45,7 @@ class AnimatedAppBarState extends State<AnimatedAppBar>
 
     return Stack(
       children: [
-        widget.primaryAppBar,
+        widget.primaryAppBar!,
         AnimatedBuilder(
           animation: _animation,
           builder: (context, child) => CustomPaint(
@@ -57,7 +57,7 @@ class AnimatedAppBarState extends State<AnimatedAppBar>
             ),
           ),
         ),
-        _secondaryContentVisible ? widget.secondaryContent : Container(),
+        _secondaryContentVisible ? widget.secondaryContent! : Container(),
       ],
     );
   }
@@ -68,7 +68,7 @@ class AnimatedAppBarState extends State<AnimatedAppBar>
     }
   }
 
-  void showSecondaryContent({Offset animationOrigin}) {
+  void showSecondaryContent({Offset? animationOrigin}) {
     setState(() {
       _rippleStartX = animationOrigin?.dx;
       _rippleStartY = animationOrigin?.dy;

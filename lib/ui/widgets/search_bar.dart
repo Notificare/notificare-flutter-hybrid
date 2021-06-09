@@ -5,13 +5,13 @@ class SearchBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onCancelSearch;
   final Function(String) onSearchQueryChanged;
   final Function(String) onSearchSubmitted;
-  final String hintText;
+  final String? hintText;
 
   SearchBar({
-    Key key,
-    @required this.onCancelSearch,
-    @required this.onSearchQueryChanged,
-    @required this.onSearchSubmitted,
+    Key? key,
+    required this.onCancelSearch,
+    required this.onSearchQueryChanged,
+    required this.onSearchSubmitted,
     this.hintText,
   }) : super(key: key);
 

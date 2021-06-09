@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
@@ -9,11 +10,11 @@ Future<void> createMemberCard(String name, String email) async {
   email = email.trim().toLowerCase();
 
   print('Creating member card for: $email');
-  Map<String, dynamic> payload;
+  Map<String, dynamic>? payload;
 
   try {
     payload = await StorageManager.getMemberCardTemplate();
-    payload['passbook'] = payload['_id'];
+    payload!['passbook'] = payload['_id'];
 
     final emailHash = md5.convert(utf8.encode(email)).toString();
     final url = 'https://gravatar.com/avatar/$emailHash?s=512';
@@ -47,7 +48,7 @@ Future<void> createMemberCard(String name, String email) async {
       payload,
     );
 
-    final serial = result['pass']['serial'] as String;
+    final serial = result!['pass']['serial'] as String;
     await StorageManager.setMemberCardSerial(serial);
   } catch (err) {
     print('Failed to create a member card: $err');

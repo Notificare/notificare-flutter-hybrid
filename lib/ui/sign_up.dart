@@ -158,7 +158,7 @@ class _SignUpState extends State<SignUp> {
     } catch (err) {
       await showAlertDialog(
         context: context,
-        message: err.message,
+        message: 'err.message',
       );
 
       setState(() => _isLoading = false);

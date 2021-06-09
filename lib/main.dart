@@ -32,8 +32,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _notificare = NotificarePushLib();
 
-  StreamSubscription _notificareSubscription;
-  StreamSubscription _deepLinksSubscription;
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
+  StreamSubscription? _notificareSubscription;
+  StreamSubscription? _deepLinksSubscription;
 
   @override
   void initState() {
@@ -54,6 +56,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Demo Flutter',
+      scaffoldMessengerKey: _scaffoldMessengerKey,
       theme: ThemeData(
         scaffoldBackgroundColor: NotificareColors.wildSand,
         primaryColor: NotificareColors.outerSpace,
@@ -116,10 +119,9 @@ class _MyAppState extends State<MyApp> {
                       return FutureBuilder(
                         future: StorageManager.getMemberCardSerial(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
+                          if (snapshot.connectionState == ConnectionState.done) {
                             if (!snapshot.hasError && snapshot.hasData) {
-                              return MemberCard(serial: snapshot.data);
+                              return MemberCard(serial: snapshot.data as String?);
                             }
                           }
 
@@ -146,7 +148,7 @@ class _MyAppState extends State<MyApp> {
         '/analytics': (context) => Analytics(),
         '/validate': (context) {
           final AccountValidationRouteParams arguments =
-              ModalRoute.of(context).settings.arguments;
+              ModalRoute.of(context)!.settings.arguments as AccountValidationRouteParams;
 
           return AccountValidation(
             token: arguments.token,
@@ -154,7 +156,7 @@ class _MyAppState extends State<MyApp> {
         },
         '/reset-password': (context) {
           final ResetPasswordRouteParams arguments =
-              ModalRoute.of(context).settings.arguments;
+              ModalRoute.of(context)!.settings.arguments as ResetPasswordRouteParams;
 
           return ResetPassword(
             token: arguments.token,
@@ -167,8 +169,7 @@ class _MyAppState extends State<MyApp> {
   void _setupNotificare() {
     _notificare.launch();
 
-    _notificareSubscription =
-        _notificare.onEventReceived.listen((NotificareEvent event) {
+    _notificareSubscription = _notificare.onEventReceived.listen((NotificareEvent event) {
       print('Received Notificare event: ${event.name}');
 
       switch (event.name) {
@@ -181,14 +182,31 @@ class _MyAppState extends State<MyApp> {
           final data = event.data as NotificareRemoteNotificationReceivedInBackgroundEvent;
           _notificare.presentNotification(data.notification);
           break;
+
+        case 'urlOpened':
+          print('=== URL OPENED ===');
+          _scaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(content: Text('URL = ${(event.data as NotificareUrlOpenedEvent).url}')),
+          );
+          break;
+        case 'launchUrlReceived':
+          print('=== LAUNCH URL RECEIVED ===');
+          _scaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(content: Text('Launch URL = ${(event.data as NotificareLaunchUrlReceivedEvent).url}')),
+          );
+          break;
+        case 'inboxLoaded':
+          print('=== INBOX LOADED ===');
+          _scaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(content: Text('Inbox count = ${(event.data as NotificareInboxLoadedEvent).inbox.length}')),
+          );
       }
     });
   }
 
   Future<void> _handleNotificareReady() async {
     if (await _notificare.isRemoteNotificationsEnabled()) {
-      print(
-          'Remote notifications are enabled. Registering for notifications...');
+      print('Remote notifications are enabled. Registering for notifications...');
       _notificare.registerForNotifications();
     }
 
