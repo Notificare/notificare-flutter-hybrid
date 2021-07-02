@@ -25,7 +25,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   http: ^0.13.1
   shared_preferences: ^2.0.5
-  notificare_push_lib: ^2.0.0
+  notificare_push_lib: ^2.6.2
 #    path: /Users/hpinhal/Developer/notificare/sdks/notificare-push-lib-flutter
   webview_flutter: ^2.0.2
   url_launcher: ^6.0.2
