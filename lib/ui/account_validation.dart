@@ -66,12 +66,12 @@ class _AccountValidationState extends State<AccountValidation> {
         Text(
           'Your account has been validated!',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.subtitle1,
         ),
         Text(
           'You can login now.',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.subtitle,
+          style: Theme.of(context).textTheme.subtitle2,
         ),
         Padding(padding: EdgeInsets.only(top: 20)),
         RaisedButton(
@@ -95,12 +95,12 @@ class _AccountValidationState extends State<AccountValidation> {
         Text(
           'Something went wrong.',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.subtitle1,
         ),
         Text(
           'We couldn\'t validate your account.',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.subtitle,
+          style: Theme.of(context).textTheme.subtitle2,
         ),
         Padding(padding: EdgeInsets.only(top: 20)),
         RaisedButton(

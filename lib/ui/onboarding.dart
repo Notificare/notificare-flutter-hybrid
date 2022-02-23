@@ -63,7 +63,7 @@ class _OnboardingState extends State<Onboarding> {
                         child: Text(
                           asset.assetTitle!,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.title!.copyWith(
+                          style: Theme.of(context).textTheme.subtitle1!.copyWith(
                             color: NotificareColors.gray,
                           ),
                         ),

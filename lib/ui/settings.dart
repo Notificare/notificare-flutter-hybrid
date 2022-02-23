@@ -4,7 +4,7 @@ import 'package:demo_flutter/theme/notificare_colors.dart';
 import 'package:demo_flutter/utils/storage_manager.dart';
 import 'package:demo_flutter/utils/time_of_day_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
+// import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 import 'package:package_info/package_info.dart';
@@ -380,13 +380,13 @@ class _SettingsState extends State<Settings> {
     final demoSourceConfig = await StorageManager.getDemoSourceConfig() ;
     final recipients = demoSourceConfig!.email!.split(',');
 
-    final email = Email(
-      recipients: recipients,
-      subject: 'your_subject',
-      body: 'your_message',
-    );
-
-    await FlutterEmailSender.send(email);
+    // final email = Email(
+    //   recipients: recipients,
+    //   subject: 'your_subject',
+    //   body: 'your_message',
+    // );
+    //
+    // await FlutterEmailSender.send(email);
   }
 
   _AdornedListItem _createDoNotDisturbTimeListItem(
@@ -434,7 +434,7 @@ class _SectionListItem extends _ListItem {
       decoration: buildDecoration(context),
       child: Text(
         title.toUpperCase(),
-        style: Theme.of(context).textTheme.subhead,
+        style: Theme.of(context).textTheme.subtitle2,
       ),
     );
   }
@@ -462,7 +462,7 @@ class _PreferenceListItem extends _ListItem {
         contentPadding: EdgeInsets.all(16),
         title: Text(
           title,
-          style: Theme.of(context).textTheme.subhead,
+          style: Theme.of(context).textTheme.subtitle2,
         ),
         subtitle: Text(
           description,
@@ -499,7 +499,7 @@ class _AdornedListItem extends _ListItem {
       child: ListTile(
         title: Text(
           title,
-          style: Theme.of(context).textTheme.subhead,
+          style: Theme.of(context).textTheme.subtitle2,
         ),
         trailing: adornmentBuilder != null ? adornmentBuilder!() : null,
         onTap: onTap != null ? onTap : null,

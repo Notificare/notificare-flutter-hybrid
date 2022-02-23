@@ -7,7 +7,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:crypto/crypto.dart';
 import 'package:demo_flutter/utils/dialog_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
+// import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:notificare_push_lib/notificare_models.dart';
 import 'package:notificare_push_lib/notificare_push_lib.dart';
 import 'package:package_info/package_info.dart';
@@ -186,7 +186,7 @@ class _ProfileState extends State<Profile> {
       padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(
         label.toUpperCase(),
-        style: Theme.of(context).textTheme.subhead,
+        style: Theme.of(context).textTheme.subtitle2,
       ),
     );
   }
@@ -202,7 +202,7 @@ class _ProfileState extends State<Profile> {
         (value != null && trailing == null) ||
         (value == null && trailing != null));
 
-    TextStyle? mergedLabelStyle = Theme.of(context).textTheme.body1;
+    TextStyle? mergedLabelStyle = Theme.of(context).textTheme.bodyText1;
     if (labelStyle != null) {
       mergedLabelStyle = mergedLabelStyle!.merge(labelStyle);
     }
@@ -255,13 +255,13 @@ class _ProfileState extends State<Profile> {
   Future<void> _openEmailClient(NotificareUser profile) async {
     final packageInfo = await PackageInfo.fromPlatform();
 
-    final email = Email(
-      recipients: ["${profile.accessToken}@pushmail.notifica.re"],
-      subject: "${Platform.operatingSystem} ${packageInfo.appName}",
-      body: '',
-    );
-
-    await FlutterEmailSender.send(email);
+    // final email = Email(
+    //   recipients: ["${profile.accessToken}@pushmail.notifica.re"],
+    //   subject: "${Platform.operatingSystem} ${packageInfo.appName}",
+    //   body: '',
+    // );
+    //
+    // await FlutterEmailSender.send(email);
   }
 
   void _openMemberCard() {

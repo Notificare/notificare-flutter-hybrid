@@ -47,7 +47,7 @@ class _AnalyticsState extends State<Analytics> {
                     child: Center(
                       child: Text(
                         'Register a custom event.',
-                        style: Theme.of(context).textTheme.title,
+                        style: Theme.of(context).textTheme.subtitle1,
                         textAlign: TextAlign.center,
                       ),
                     ),

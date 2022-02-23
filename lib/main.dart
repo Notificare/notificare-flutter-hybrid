@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
         accentColor: NotificareColors.gray,
         fontFamily: 'ProximaNova',
         textTheme: TextTheme(
-          body2: TextStyle(
+          bodyText2: TextStyle(
             fontWeight: FontWeight.w700,
           ),
           caption: TextStyle(

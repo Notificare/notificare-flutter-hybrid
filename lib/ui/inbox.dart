@@ -135,7 +135,7 @@ class _InboxState extends State<Inbox> {
                   Text(
                     item.title ?? "",
                     maxLines: 1,
-                    style: Theme.of(context).textTheme.body2!.copyWith(
+                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           color: item.opened! ? Colors.grey : Colors.black,
                         ),
                   ),

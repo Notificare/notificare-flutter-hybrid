@@ -104,7 +104,7 @@ class _StorageState extends State<Storage> {
                 asset.assetTitle!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.body1,
+                style: Theme.of(context).textTheme.bodyText1,
               ),
             ),
           ],
