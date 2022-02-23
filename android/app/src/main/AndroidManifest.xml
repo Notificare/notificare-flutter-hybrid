@@ -12,6 +12,7 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
+            android:exported="true"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -19,6 +20,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="re.notifica.intent.action.RemoteMessageOpened" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="re.notifica.intent.action.NotificationOpened" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -48,6 +57,7 @@
 
         <activity
             android:name="re.notifica.ui.NotificationActivity"
+            android:exported="false"
             android:theme="@style/AppTheme.Translucent"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:hardwareAccelerated="true">
@@ -57,6 +67,7 @@
         </activity>
 
         <activity
+            android:exported="true"
             android:name="re.notifica.ui.PassbookActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:hardwareAccelerated="true">
@@ -72,6 +83,7 @@
         </activity>
 
         <activity
+            android:exported="false"
             android:name="re.notifica.ui.ScannableActivity"
             android:theme="@style/AppTheme"
             android:configChanges="keyboardHidden|orientation|screenSize"

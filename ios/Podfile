@@ -37,7 +37,7 @@ end
 target 'notification' do # use the name of the target you created previously
   use_frameworks!
 
-  pod 'notificare-push-lib', '~> 2.5.0' # make sure you use the same version as your main target
+  pod 'notificare-push-lib', '~> 2.6.1' # make sure you use the same version as your main target
 end
 
 post_install do |installer|
